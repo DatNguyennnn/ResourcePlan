@@ -2,7 +2,6 @@ databases:
   - name: hr-postgres
     plan: free
     databaseName: hr_management
-    user: postgres
 
 services:
   - type: web
@@ -15,7 +14,7 @@ services:
       - key: DATABASE_URL
         fromDatabase:
           name: hr-postgres
-          property: connectionURI
+          property: connectionString
       - key: CORS_ORIGINS
         value: '["https://hr-frontend.onrender.com"]'
       - key: SECRET_KEY
