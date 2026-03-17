@@ -112,6 +112,31 @@ Xay dung dua tren du lieu tu file Excel `IBS_Resource Plan_2026.xlsx`.
   - Frontend Chatbot.tsx goi `${API_URL}/api/chat/` thay vi truc tiep Groq
   - Fix loi chatbot ko hoat dong tren Render (API key ko co luc Docker build)
 
+### 2026-03-17 - UI/UX improvements (UI Pro Max skill)
+- **EmployeeDetailModal cai thien**:
+  - Tat ca text chuyen sang tieng Viet co dau (Du an -> Du an, Tong -> Tong, warning messages)
+  - Them nut Save/Cancel khi edit % (truoc chi co input, gio co nut xanh/xam)
+  - Them success feedback ("Da cap nhat thanh X%") tu dong an sau 2.5s
+  - Backdrop blur + shadow cho modal, gradient header
+  - Loading spinner thay vi text "Dang tai..."
+  - Skip save khi gia tri khong thay doi
+- **Chatbot cai thien**:
+  - Cache context 2 phut de giam API calls
+  - Giam context size: bo chi tiet phan bo tung nhan vien (qua nang), giam max_tokens 2048->1024
+  - Xu ly loi Groq API (rate_limit, error response) thay vi "Xin loi ko tra loi dc"
+  - Them nut lam moi cuoc tro chuyen (RefreshCw)
+  - Tat ca text tieng Viet co dau
+  - Loading animation (bouncing dots)
+- **Sidebar**: nut Giao dien sang/toi chuyen len TREN navigation, tach khoi nut Dang xuat
+  - Nut giao dien co mau rieng (amber cho dark mode, indigo cho light mode)
+- **Resource Table page**:
+  - Them bo chon ngay (date picker) "Tu ngay - Den ngay" de loc bang phan bo
+  - Sua tat ca text sang tieng Viet co dau
+  - Sua option phong ban co dau
+- **Dashboard**: fix >100% dem across tat ca cac tuan (ko chi tuan hien tai)
+- **CSS**: them animation fadeIn, slideDown; them transition cho allocation cells
+- **Cai dat UI/UX Pro Max skill**: `uipro init --ai claude`
+
 ## Cau truc file quan trong
 - `backend/app/main.py` - Entry point FastAPI
 - `backend/app/auth.py` - JWT auth logic (hash, verify, token, dependencies)

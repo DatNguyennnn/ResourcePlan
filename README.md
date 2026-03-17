@@ -42,6 +42,7 @@ He thong quan ly phan bo nguon luc nhan su du an cho Trung tam IBS (iERP Service
 - Hien thi bang phan bo nhan vien x tuan (heatmap)
 - Click vao nhan vien de xem chi tiet phan bo theo tung du an
 - Loc theo phong ban, tim kiem nhan vien
+- Bo chon ngay (date picker) de loc bang theo khoang thoi gian bat ky
 - Ma mau theo muc do phan bo (xanh 100%, vang 60-79%, cam 40-59%, do <40%)
 
 ### Phan bo nhan vien vao du an (Admin)
@@ -53,8 +54,8 @@ He thong quan ly phan bo nguon luc nhan su du an cho Trung tam IBS (iERP Service
 
 ### Chinh sua % phan bo truc tiep (Admin)
 - Click vao o % trong modal chi tiet nhan vien de chinh sua
-- Nhap % moi, Enter de luu, Escape de huy
-- Hien thi canh bao overload sau khi luu neu tong > 100%
+- Nut Save/Cancel hien thi khi dang edit, hoac Enter de luu, Escape de huy
+- Hien thi thong bao thanh cong sau khi luu, canh bao overload neu tong > 100%
 
 ### Import Excel
 - Upload file Excel (dinh dang IBS_Resource Plan)
@@ -74,7 +75,8 @@ He thong quan ly phan bo nguon luc nhan su du an cho Trung tam IBS (iERP Service
 
 ### Sidebar co the thu gon
 - Nut dong/mo sidebar (collapse/expand)
-- Nut dang xuat + doi giao dien sang/toi nam duoi cung voi text label
+- Nut doi giao dien sang/toi nam TREN navigation (de nhin, de truy cap)
+- Nut dang xuat nam duoi cung voi thong tin user
 - Tat ca label tieng Viet co dau: Tong quan, Nhan su, Du an, Bang phan bo, Nhap du lieu
 
 ### API
