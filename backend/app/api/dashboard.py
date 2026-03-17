@@ -113,8 +113,10 @@ def get_dashboard_summary(
             "employee_count": d["employee_count"],
         })
 
-    # Overload / underload stats across all weeks in range
-    # Count distinct employees who have >100% in any week
+    # Overload / underload stats
+    # >100%: count across all weeks in range
+    # <60%: only count from today forward (current + future weeks)
+    today = date.today()
     over_100_employees = set()
     under_60_employees = set()
     participating_employees = set()
@@ -123,7 +125,7 @@ def get_dashboard_summary(
             participating_employees.add(row.full_name)
         if row.total_alloc > 1.0:
             over_100_employees.add(row.full_name)
-        if row.total_alloc < 0.6:
+        if row.total_alloc < 0.6 and row.week_start >= today:
             under_60_employees.add(row.full_name)
 
     over_100 = len(over_100_employees)

@@ -30,26 +30,39 @@ export default function Sidebar() {
     <aside className={`${collapsed ? 'w-[68px]' : 'w-64'} bg-white dark:bg-slate-800 border-r border-gray-200 dark:border-slate-700 min-h-screen flex flex-col transition-all duration-300`}>
       {/* Header with logo + collapse toggle */}
       <div className="p-3 border-b border-gray-200 dark:border-slate-700">
-        <div className={`flex items-center ${collapsed ? 'justify-center' : 'justify-between'}`}>
-          <div className={`flex items-center ${collapsed ? '' : 'gap-2'} min-w-0`}>
-            <div className="w-9 h-9 bg-green-600 rounded-lg flex items-center justify-center flex-shrink-0">
+        {collapsed ? (
+          <div className="flex flex-col items-center gap-2">
+            <div className="w-9 h-9 bg-green-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">IBS</span>
             </div>
-            {!collapsed && (
+            <button
+              onClick={() => setCollapsed(false)}
+              aria-label="Mở rộng sidebar"
+              className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 dark:text-slate-500 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-slate-700 dark:hover:text-slate-300 transition-colors duration-200 cursor-pointer"
+            >
+              <PanelLeftOpen size={18} />
+            </button>
+          </div>
+        ) : (
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="w-9 h-9 bg-green-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                <span className="text-white font-bold text-sm">IBS</span>
+              </div>
               <div className="min-w-0">
                 <h1 className="font-bold text-sm text-gray-900 dark:text-slate-100 truncate">iERP Services JSC</h1>
                 <p className="text-xs text-gray-500 dark:text-slate-400">Quản lý Nguồn lực</p>
               </div>
-            )}
+            </div>
+            <button
+              onClick={() => setCollapsed(true)}
+              aria-label="Thu gọn sidebar"
+              className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 dark:text-slate-500 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-slate-700 dark:hover:text-slate-300 transition-colors duration-200 cursor-pointer flex-shrink-0"
+            >
+              <PanelLeftClose size={18} />
+            </button>
           </div>
-          <button
-            onClick={() => setCollapsed(!collapsed)}
-            aria-label={collapsed ? 'Mở rộng sidebar' : 'Thu gọn sidebar'}
-            className={`${collapsed ? 'mt-2' : ''} w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 dark:text-slate-500 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-slate-700 dark:hover:text-slate-300 transition-colors duration-200 cursor-pointer flex-shrink-0`}
-          >
-            {collapsed ? <PanelLeftOpen size={18} /> : <PanelLeftClose size={18} />}
-          </button>
-        </div>
+        )}
       </div>
 
       {/* Theme toggle */}
