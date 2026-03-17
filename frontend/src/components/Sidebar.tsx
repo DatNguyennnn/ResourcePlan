@@ -44,24 +44,8 @@ export default function Sidebar() {
           </div>
         </div>
 
-        {/* Top controls: theme toggle, logout, collapse */}
-        <div className={`flex items-center mt-2 ${collapsed ? 'flex-col gap-1' : 'gap-1 justify-between'}`}>
-          <button
-            onClick={toggle}
-            title={dark ? 'Giao diện sáng' : 'Giao diện tối'}
-            className="p-1.5 rounded-lg text-gray-500 hover:bg-gray-100 dark:text-slate-400 dark:hover:bg-slate-700 transition-colors"
-          >
-            {dark ? <Sun size={16} /> : <Moon size={16} />}
-          </button>
-          {user && (
-            <button
-              onClick={handleLogout}
-              title="Đăng xuất"
-              className="p-1.5 rounded-lg text-red-500 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 transition-colors"
-            >
-              <LogOut size={16} />
-            </button>
-          )}
+        {/* Collapse button */}
+        <div className={`flex items-center mt-2 ${collapsed ? 'justify-center' : 'justify-end'}`}>
           <button
             onClick={() => setCollapsed(!collapsed)}
             title={collapsed ? 'Mở rộng' : 'Thu gọn'}
@@ -94,9 +78,27 @@ export default function Sidebar() {
         })}
       </nav>
 
-      {/* User info */}
-      {user && (
-        <div className="p-3 border-t border-gray-200 dark:border-slate-700">
+      {/* Bottom controls: theme toggle, logout, user info */}
+      <div className="p-3 border-t border-gray-200 dark:border-slate-700">
+        <div className={`flex items-center mb-2 ${collapsed ? 'flex-col gap-1' : 'gap-1'}`}>
+          <button
+            onClick={toggle}
+            title={dark ? 'Giao diện sáng' : 'Giao diện tối'}
+            className="p-1.5 rounded-lg text-gray-500 hover:bg-gray-100 dark:text-slate-400 dark:hover:bg-slate-700 transition-colors"
+          >
+            {dark ? <Sun size={16} /> : <Moon size={16} />}
+          </button>
+          {user && (
+            <button
+              onClick={handleLogout}
+              title="Đăng xuất"
+              className="p-1.5 rounded-lg text-red-500 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 transition-colors"
+            >
+              <LogOut size={16} />
+            </button>
+          )}
+        </div>
+        {user && (
           <div className={`flex items-center ${collapsed ? 'justify-center' : 'gap-2'}`}>
             {isAdmin ? (
               <Shield size={16} className="text-amber-500 flex-shrink-0" />
@@ -112,8 +114,8 @@ export default function Sidebar() {
               </div>
             )}
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </aside>
   );
 }
