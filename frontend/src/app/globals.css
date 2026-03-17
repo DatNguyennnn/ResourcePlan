@@ -1,0 +1,59 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-primary: #f8fafc;
+  --bg-card: #ffffff;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --border-color: #e2e8f0;
+  --green-primary: #16a34a;
+  --green-light: #dcfce7;
+}
+
+.dark {
+  --bg-primary: #0f172a;
+  --bg-card: #1e293b;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --border-color: #334155;
+  --green-primary: #22c55e;
+  --green-light: #14532d;
+}
+
+body {
+  @apply bg-gray-50 text-gray-900 dark:bg-slate-900 dark:text-slate-100;
+}
+
+.dark input, .dark select, .dark textarea {
+  @apply bg-slate-700 border-slate-600 text-slate-100 placeholder-slate-400;
+}
+
+.allocation-cell {
+  @apply text-center text-xs font-medium px-1 py-1;
+}
+
+.alloc-100 {
+  @apply bg-green-600 text-white;
+}
+
+.alloc-80 {
+  @apply bg-green-400 text-white;
+}
+
+.alloc-60 {
+  @apply bg-yellow-400 text-gray-900;
+}
+
+.alloc-40 {
+  @apply bg-orange-400 text-white;
+}
+
+.alloc-20 {
+  @apply bg-red-400 text-white;
+}
+
+.alloc-0 {
+  @apply bg-gray-100 text-gray-400 dark:bg-slate-700 dark:text-slate-500;
+}

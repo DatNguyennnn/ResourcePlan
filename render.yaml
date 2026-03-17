@@ -1,0 +1,39 @@
+databases:
+  - name: hr-postgres
+    plan: free
+    databaseName: hr_management
+    user: postgres
+
+services:
+  - type: web
+    name: hr-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: hr-postgres
+          property: connectionURI
+      - key: CORS_ORIGINS
+        value: '["https://hr-frontend.onrender.com"]'
+      - key: SECRET_KEY
+        generateValue: true
+      - key: PORT
+        value: "8000"
+    healthCheckPath: /api/health
+
+  - type: web
+    name: hr-frontend
+    runtime: docker
+    dockerfilePath: ./frontend/Dockerfile
+    dockerContext: ./frontend
+    plan: free
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        value: https://hr-backend.onrender.com
+      - key: NEXT_PUBLIC_GROQ_API_KEY
+        sync: false
+      - key: PORT
+        value: "3000"
