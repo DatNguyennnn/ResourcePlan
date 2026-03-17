@@ -78,17 +78,36 @@ export default function Sidebar() {
         })}
       </nav>
 
-      {/* Bottom controls: theme toggle, logout, user info */}
-      <div className="p-3 border-t border-gray-200 dark:border-slate-700">
-        <div className={`flex flex-col gap-1 mb-2`}>
-          <button
-            onClick={toggle}
-            className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-100 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors w-full"
-          >
-            {dark ? <Sun size={18} /> : <Moon size={18} />}
-            {!collapsed && (dark ? 'Giao diện sáng' : 'Giao diện tối')}
-          </button>
-          {user && (
+      {/* Theme toggle */}
+      <div className="px-3 pt-3 pb-1 border-t border-gray-200 dark:border-slate-700">
+        <button
+          onClick={toggle}
+          className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-100 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors w-full"
+        >
+          {dark ? <Sun size={18} /> : <Moon size={18} />}
+          {!collapsed && (dark ? 'Giao diện sáng' : 'Giao diện tối')}
+        </button>
+      </div>
+
+      {/* User info + logout */}
+      <div className="px-3 pb-3 pt-1 border-t border-gray-200 dark:border-slate-700">
+        {user && (
+          <>
+            <div className={`flex items-center ${collapsed ? 'justify-center' : 'gap-2'} mb-2`}>
+              {isAdmin ? (
+                <Shield size={16} className="text-amber-500 flex-shrink-0" />
+              ) : (
+                <User size={16} className="text-blue-500 flex-shrink-0" />
+              )}
+              {!collapsed && (
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-gray-900 dark:text-slate-100 truncate">{user.full_name}</p>
+                  <p className="text-xs text-gray-500 dark:text-slate-400">
+                    {isAdmin ? 'Quản trị viên' : 'Nhân viên'}
+                  </p>
+                </div>
+              )}
+            </div>
             <button
               onClick={handleLogout}
               className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-red-500 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 transition-colors w-full"
@@ -96,24 +115,7 @@ export default function Sidebar() {
               <LogOut size={18} />
               {!collapsed && 'Đăng xuất'}
             </button>
-          )}
-        </div>
-        {user && (
-          <div className={`flex items-center ${collapsed ? 'justify-center' : 'gap-2'}`}>
-            {isAdmin ? (
-              <Shield size={16} className="text-amber-500 flex-shrink-0" />
-            ) : (
-              <User size={16} className="text-blue-500 flex-shrink-0" />
-            )}
-            {!collapsed && (
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 dark:text-slate-100 truncate">{user.full_name}</p>
-                <p className="text-xs text-gray-500 dark:text-slate-400">
-                  {isAdmin ? 'Quản trị viên' : 'Nhân viên'}
-                </p>
-              </div>
-            )}
-          </div>
+          </>
         )}
       </div>
     </aside>

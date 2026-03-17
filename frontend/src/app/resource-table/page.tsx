@@ -8,7 +8,7 @@ import EmployeeDetailModal from '@/components/EmployeeDetailModal';
 import AllocationFormModal from '@/components/AllocationFormModal';
 import { fetchResourceTable, type ResourceTableData } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
-import { Search, Plus } from 'lucide-react';
+import { Search, Plus, Calendar } from 'lucide-react';
 
 export default function ResourceTablePage() {
   const { user, isAdmin } = useAuth();
@@ -19,6 +19,8 @@ export default function ResourceTablePage() {
   const [department, setDepartment] = useState('');
   const [employeeName, setEmployeeName] = useState('');
   const [showAllocForm, setShowAllocForm] = useState(false);
+  const [weekFrom, setWeekFrom] = useState('');
+  const [weekTo, setWeekTo] = useState('');
 
   useEffect(() => {
     if (!user) { router.push('/login'); }
@@ -28,12 +30,14 @@ export default function ResourceTablePage() {
     const params: Record<string, string> = {};
     if (department) params.department = department;
     if (employeeName) params.employee_name = employeeName;
+    if (weekFrom) params.week_from = weekFrom;
+    if (weekTo) params.week_to = weekTo;
 
     setLoading(true);
     fetchResourceTable(params)
       .then(setData)
       .finally(() => setLoading(false));
-  }, [department, employeeName]);
+  }, [department, employeeName, weekFrom, weekTo]);
 
   useEffect(() => {
     loadData();
@@ -57,8 +61,8 @@ export default function ResourceTablePage() {
           )}
         </div>
 
-        <div className="flex gap-3 mb-4">
-          <div className="relative flex-1">
+        <div className="flex gap-3 mb-4 flex-wrap">
+          <div className="relative flex-1 min-w-[200px]">
             <Search size={16} className="absolute left-3 top-2.5 text-gray-400" />
             <input
               type="text"
@@ -71,10 +75,28 @@ export default function ResourceTablePage() {
           <select value={department} onChange={(e) => setDepartment(e.target.value)}
             className="border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-slate-700 dark:text-slate-100">
             <option value="">Tất cả phòng ban</option>
-            <option value="P.Kỹ thuật IBS">P.Ky thuat IBS</option>
-            <option value="P.Nghiệp vụ IBS">P.Nghiep vu IBS</option>
-            <option value="P.Phát triển phần mềm">P.Phat trien phan mem</option>
+            <option value="P.Kỹ thuật IBS">P.Kỹ thuật IBS</option>
+            <option value="P.Nghiệp vụ IBS">P.Nghiệp vụ IBS</option>
+            <option value="P.Phát triển phần mềm">P.Phát triển phần mềm</option>
           </select>
+          <div className="flex items-center gap-2">
+            <Calendar size={16} className="text-gray-400" />
+            <input
+              type="date"
+              value={weekFrom}
+              onChange={(e) => setWeekFrom(e.target.value)}
+              className="border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-slate-700 dark:text-slate-100"
+              title="Từ ngày"
+            />
+            <span className="text-gray-400 text-sm">đến</span>
+            <input
+              type="date"
+              value={weekTo}
+              onChange={(e) => setWeekTo(e.target.value)}
+              className="border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-slate-700 dark:text-slate-100"
+              title="Đến ngày"
+            />
+          </div>
         </div>
 
         {loading ? (
@@ -82,7 +104,7 @@ export default function ResourceTablePage() {
         ) : data ? (
           <>
             <div className="mb-4 flex gap-4 text-xs text-gray-500 dark:text-slate-400">
-              <span>Tong: <strong>{data.employees.length}</strong> nhan vien</span>
+              <span>Tổng: <strong>{data.employees.length}</strong> nhân viên</span>
               <span>|</span>
               <span className="flex items-center gap-1"><span className="w-3 h-3 rounded alloc-100 inline-block"></span> 100%</span>
               <span className="flex items-center gap-1"><span className="w-3 h-3 rounded alloc-80 inline-block"></span> 80-99%</span>

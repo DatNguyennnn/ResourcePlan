@@ -113,28 +113,24 @@ def get_dashboard_summary(
             "employee_count": d["employee_count"],
         })
 
-    # Current week stats
-    today = date.today()
-    current_week_start = today - timedelta(days=today.weekday())
-    # Find nearest Monday
-    current_allocs = (
-        db.query(
-            Employee.full_name,
-            func.sum(ResourceAllocation.allocation_percentage).label("total"),
-        )
-        .join(Employee, ResourceAllocation.employee_id == Employee.id)
-        .filter(ResourceAllocation.week_start == current_week_start)
-    )
-    if department:
-        current_allocs = current_allocs.filter(Employee.department == department)
-    current_allocs = current_allocs.group_by(Employee.full_name).all()
+    # Overload / underload stats across all weeks in range
+    # Count distinct employees who have >100% in any week
+    over_100_employees = set()
+    under_60_employees = set()
+    participating_employees = set()
+    for row in weekly_util:
+        if row.total_alloc > 0:
+            participating_employees.add(row.full_name)
+        if row.total_alloc > 1.0:
+            over_100_employees.add(row.full_name)
+        if row.total_alloc < 0.6:
+            under_60_employees.add(row.full_name)
 
-    over_100 = sum(1 for r in current_allocs if r.total > 1.0)
-    under_60 = sum(1 for r in current_allocs if r.total < 0.6)
+    over_100 = len(over_100_employees)
+    under_60 = len(under_60_employees)
     participation_rate = 0
     if total_employees > 0:
-        participating = sum(1 for r in current_allocs if r.total > 0)
-        participation_rate = round(participating / total_employees * 100, 1)
+        participation_rate = round(len(participating_employees) / total_employees * 100, 1)
 
     return {
         "total_employees": total_employees,

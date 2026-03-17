@@ -23,7 +23,7 @@ interface Props {
 
 export default function ResourceTable({ data, onEmployeeClick }: Props) {
   if (!data.employees.length) {
-    return <p className="text-gray-500 dark:text-slate-400 text-sm p-4">Khong co du lieu phan bo.</p>;
+    return <p className="text-gray-500 dark:text-slate-400 text-sm p-4">Không có dữ liệu phân bổ.</p>;
   }
 
   return (
@@ -32,9 +32,9 @@ export default function ResourceTable({ data, onEmployeeClick }: Props) {
         <thead>
           <tr className="bg-green-700 text-white">
             <th className="sticky left-0 bg-green-700 z-10 px-3 py-2 text-left text-xs font-medium whitespace-nowrap">
-              Ho va Ten
+              Họ và Tên
             </th>
-            <th className="px-2 py-2 text-left text-xs font-medium whitespace-nowrap">Phong ban</th>
+            <th className="px-2 py-2 text-left text-xs font-medium whitespace-nowrap">Phòng ban</th>
             {data.weeks.map((w) => (
               <th key={w} className="px-1 py-2 text-center text-xs font-medium whitespace-nowrap">
                 {formatWeek(w)}
