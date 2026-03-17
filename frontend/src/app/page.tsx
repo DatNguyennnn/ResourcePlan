@@ -68,15 +68,16 @@ export default function DashboardPage() {
         </div>
 
         {loading ? (
-          <div className="flex items-center justify-center h-64">
-            <p className="text-gray-500 dark:text-slate-400">Đang tải dữ liệu...</p>
+          <div className="flex flex-col items-center justify-center h-64 gap-3">
+            <div className="w-10 h-10 border-4 border-green-500 border-t-transparent rounded-full animate-spin"></div>
+            <p className="text-sm text-gray-500 dark:text-slate-400">Đang tải dữ liệu...</p>
           </div>
         ) : summary ? (
           <>
             <OverloadWarning />
 
             {/* KPI Cards */}
-            <div className="grid grid-cols-5 gap-4 mb-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
               <StatCard title="Số lượng nhân sự" value={summary.total_employees} color="green" />
               <StatCard title="Dự án đang thực hiện" value={summary.active_projects} color="blue" />
               <StatCard title="Tỷ lệ tham gia dự án" value={`${summary.participation_rate}%`} color="green" />
@@ -85,7 +86,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Charts Row */}
-            <div className="grid grid-cols-4 gap-4 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
               <PieChartCard data={summary.department_distribution} title="Nhân sự theo Phòng ban" />
               <PieChartCard data={summary.level_distribution} title="Nhân sự theo Nguồn lực" />
               <ProjectStatusChart data={summary.project_status_distribution} title="Số lượng dự án theo Trạng thái" />

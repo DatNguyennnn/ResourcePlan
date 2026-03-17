@@ -30,7 +30,7 @@ export default function ImportPage() {
       const res = await importExcel(file);
       setResult(res);
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Import that bai. Vui long kiem tra file Excel.');
+      setError(err.response?.data?.detail || 'Import thất bại. Vui lòng kiểm tra file Excel.');
     } finally {
       setLoading(false);
     }
@@ -48,8 +48,8 @@ export default function ImportPage() {
           <div className="bg-white dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-slate-700 p-6">
             <h2 className="font-semibold mb-4 text-gray-900 dark:text-slate-100">Tải lên file Excel</h2>
             <p className="text-sm text-gray-500 dark:text-slate-400 mb-4">
-              Chon file Excel co dinh dang tuong tu file &quot;IBS_Resource Plan_2026.xlsx&quot;.
-              He thong se tu dong import du lieu nhan vien, du an va phan bo nguon luc.
+              Chọn file Excel có định dạng tương tự file &quot;IBS_Resource Plan_2026.xlsx&quot;.
+              Hệ thống sẽ tự động import dữ liệu nhân viên, dự án và phân bổ nguồn lực.
             </p>
 
             <form onSubmit={handleSubmit}>
@@ -62,14 +62,14 @@ export default function ImportPage() {
                   className="block mx-auto text-sm text-gray-700 dark:text-slate-300"
                 />
                 {file && (
-                  <p className="text-sm text-green-600 dark:text-green-400 mt-2">Da chon: {file.name}</p>
+                  <p className="text-sm text-green-600 dark:text-green-400 mt-2">Đã chọn: {file.name}</p>
                 )}
               </div>
 
               <button
                 type="submit"
                 disabled={!file || loading}
-                className="w-full bg-green-600 text-white py-2 rounded-lg text-sm hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-green-600 text-white py-2 rounded-lg text-sm hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
               >
                 {loading ? 'Đang nhập...' : 'Nhập dữ liệu'}
               </button>
@@ -82,9 +82,9 @@ export default function ImportPage() {
                   {result.message}
                 </div>
                 <ul className="text-sm text-green-600 dark:text-green-400 space-y-1">
-                  <li>Nhan vien: {result.stats.employees} ban ghi</li>
-                  <li>Du an: {result.stats.projects} ban ghi</li>
-                  <li>Phan bo: {result.stats.allocations} ban ghi</li>
+                  <li>Nhân viên: {result.stats.employees} bản ghi</li>
+                  <li>Dự án: {result.stats.projects} bản ghi</li>
+                  <li>Phân bổ: {result.stats.allocations} bản ghi</li>
                 </ul>
               </div>
             )}
@@ -100,11 +100,11 @@ export default function ImportPage() {
           </div>
 
           <div className="mt-6 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-            <h3 className="font-semibold text-blue-800 dark:text-blue-400 text-sm mb-2">Yeu cau dinh dang file Excel</h3>
+            <h3 className="font-semibold text-blue-800 dark:text-blue-400 text-sm mb-2">Yêu cầu định dạng file Excel</h3>
             <ul className="text-sm text-blue-700 dark:text-blue-300 space-y-1 list-disc pl-4">
-              <li>Sheet &quot;DS Nhan vien&quot;: STT, ID, Ho va Ten, Phong Ban TT, Nguon luc, Trang thai</li>
-              <li>Sheet &quot;DS Du an&quot;: STT, Ma DA, Ten DA, Mo ta DA, PM, Loai Du an</li>
-              <li>Sheet &quot;Resource Plan&quot;: ID NV, Ho Ten, Phong, Trang thai, Ma DA, Ten DA, PM, Trang thai DA, ..., Cac cot tuan</li>
+              <li>Sheet &quot;DS Nhân viên&quot;: STT, ID, Họ và Tên, Phòng Ban TT, Nguồn lực, Trạng thái</li>
+              <li>Sheet &quot;DS Dự án&quot;: STT, Mã DA, Tên DA, Mô tả DA, PM, Loại Dự án</li>
+              <li>Sheet &quot;Resource Plan&quot;: ID NV, Họ Tên, Phòng, Trạng thái, Mã DA, Tên DA, PM, Trạng thái DA, ..., Các cột tuần</li>
             </ul>
           </div>
         </div>

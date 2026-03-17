@@ -54,7 +54,7 @@ export default function ResourceTablePage() {
           {isAdmin && (
             <button
               onClick={() => setShowAllocForm(true)}
-              className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-700"
+              className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-700 transition-colors cursor-pointer"
             >
               <Plus size={16} /> Phân bổ nhân viên
             </button>

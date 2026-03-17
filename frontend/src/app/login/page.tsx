@@ -33,7 +33,7 @@ export default function LoginPage() {
       {/* Theme toggle */}
       <button
         onClick={toggle}
-        className="absolute top-4 right-4 p-2 rounded-lg text-gray-500 hover:bg-gray-200 dark:text-slate-400 dark:hover:bg-slate-700"
+        className="absolute top-4 right-4 p-2 rounded-lg text-gray-500 hover:bg-gray-200 dark:text-slate-400 dark:hover:bg-slate-700 transition-colors cursor-pointer"
       >
         {dark ? <Sun size={20} /> : <Moon size={20} />}
       </button>
@@ -83,7 +83,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-green-600 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-green-700 disabled:opacity-50 transition-colors"
+              className="w-full bg-green-600 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-green-700 disabled:opacity-50 transition-colors cursor-pointer"
             >
               {loading ? 'Đang xử lý...' : 'Đăng nhập'}
             </button>
@@ -91,7 +91,7 @@ export default function LoginPage() {
 
           <div className="mt-4 text-center text-xs text-gray-400 dark:text-slate-500">
             <p>Admin: admin / admin123</p>
-            <p>Nhan vien: employee / employee123</p>
+            <p>Nhân viên: employee / employee123</p>
           </div>
         </div>
       </div>

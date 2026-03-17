@@ -1,6 +1,6 @@
-# HR Resource Management - IBS Center
+# Quản lý Nguồn lực Nhân sự - Trung tâm IBS
 
-He thong quan ly phan bo nguon luc nhan su du an cho Trung tam IBS (iERP Services JSC).
+Hệ thống quản lý phân bổ nguồn lực nhân sự dự án cho Trung tâm IBS (iERP Services JSC).
 
 ## Tech Stack
 
@@ -8,130 +8,134 @@ He thong quan ly phan bo nguon luc nhan su du an cho Trung tam IBS (iERP Service
 - **Frontend**: React 18 + Next.js 14 + TailwindCSS + Recharts
 - **Database**: PostgreSQL 16
 - **Auth**: JWT + bcrypt
-- **AI**: Groq API (llama-3.3-70b-versatile)
+- **AI**: Groq API (llama-3.3-70b-versatile + 2 model dự phòng)
 - **Deploy**: Docker Compose / Render.com
 
-## Tinh nang
+## Tính năng
 
-### Dang nhap & Phan quyen
-- Dang nhap bang username/password (JWT token)
-- 2 role: Admin (full CRUD) va Employee (chi xem)
-- Default accounts: admin/admin123, employee/employee123
-- Auth guard: tu dong redirect ve trang login neu chua dang nhap
+### Đăng nhập & Phân quyền
+- Đăng nhập bằng username/password (JWT token)
+- 2 role: Admin (full CRUD) và Employee (chỉ xem)
+- Tài khoản mặc định: admin/admin123, employee/employee123
+- Auth guard: tự động redirect về trang login nếu chưa đăng nhập
 
-### Dashboard
-- Tong quan so luong nhan su, du an dang thuc hien
-- Ty le tham gia du an (%)
-- Canh bao nhan su qua tai (>100%) va chua du viec (<60%)
-- Bieu do phan bo nhan su theo phong ban, level
-- Bieu do trang thai du an
-- Bieu do xu huong ty le tham gia theo tuan
-- Banner canh bao overload (nhan vien >100% phan bo)
+### Tổng quan (Dashboard)
+- Tổng quan số lượng nhân sự, dự án đang thực hiện
+- Tỷ lệ tham gia dự án (%)
+- Cảnh báo nhân sự quá tải (>100%) và chưa đủ việc (<60%)
+- Biểu đồ phân bổ nhân sự theo phòng ban, level
+- Biểu đồ trạng thái dự án
+- Biểu đồ xu hướng tỷ lệ tham gia theo tuần
+- Banner cảnh báo overload (nhân viên >100% phân bổ)
+- Responsive grid: tự động điều chỉnh theo kích thước màn hình
 
-### Quan ly Nhan su (CRUD - Admin only)
-- Them/sua/xoa nhan vien
-- Loc theo phong ban, level, trang thai
-- Tim kiem theo ten
+### Quản lý Nhân sự (CRUD - Admin only)
+- Thêm/sửa/xóa nhân viên
+- Lọc theo phòng ban, level, trạng thái
+- Tìm kiếm theo tên
 
-### Quan ly Du an (CRUD - Admin only)
-- Them/sua/xoa du an
-- Loc theo trang thai, PM
-- Tim kiem theo ten du an
+### Quản lý Dự án (CRUD - Admin only)
+- Thêm/sửa/xóa dự án
+- Lọc theo trạng thái, PM
+- Tìm kiếm theo tên dự án
 
-### Bang phan bo nguon luc
-- Hien thi bang phan bo nhan vien x tuan (heatmap)
-- Click vao nhan vien de xem chi tiet phan bo theo tung du an
-- Loc theo phong ban, tim kiem nhan vien
-- Bo chon ngay (date picker) de loc bang theo khoang thoi gian bat ky
-- Ma mau theo muc do phan bo (xanh 100%, vang 60-79%, cam 40-59%, do <40%)
+### Bảng phân bổ nguồn lực
+- Hiển thị bảng phân bổ nhân viên x tuần (heatmap)
+- Click vào nhân viên để xem chi tiết phân bổ theo từng dự án
+- Lọc theo phòng ban, tìm kiếm nhân viên
+- Bộ chọn ngày (date picker) để lọc bảng theo khoảng thời gian bất kỳ
+- Mã màu theo mức độ phân bổ (xanh 100%, vàng 60-79%, cam 40-59%, đỏ <40%)
+- Chỉ hiển thị tuần có phân bổ thực tế (ẩn tuần trống)
 
-### Phan bo nhan vien vao du an (Admin)
-- Nut "Phan bo nhan vien" trong trang Bang phan bo
-- Chon nhan vien, du an, ty le %, khoang thoi gian (tu ngay - den ngay)
-- Tu dong tinh cac tuan (Monday) trong khoang va tao allocation
-- Canh bao khi nhan vien da 100%+ truoc khi them (check real-time)
-- Van cho phep luu du vuot 100% (chi canh bao, khong chan)
+### Phân bổ nhân viên vào dự án (Admin)
+- Nút "Phân bổ nhân viên" trong trang Bảng phân bổ
+- Chọn nhân viên, dự án, tỷ lệ %, khoảng thời gian (từ ngày - đến ngày)
+- Hỗ trợ phân bổ cho **bất kỳ tháng/năm nào** (không giới hạn bởi dữ liệu Excel)
+- Tự động tính các tuần (thứ Hai) trong khoảng và tạo allocation
+- Cảnh báo khi nhân viên đã 100%+ trước khi thêm (check real-time)
+- Vẫn cho phép lưu dù vượt 100% (chỉ cảnh báo, không chặn)
 
-### Chinh sua % phan bo truc tiep (Admin)
-- Click vao o % trong modal chi tiet nhan vien de chinh sua
-- Nut Save/Cancel hien thi khi dang edit, hoac Enter de luu, Escape de huy
-- Hien thi thong bao thanh cong sau khi luu, canh bao overload neu tong > 100%
+### Chỉnh sửa % phân bổ trực tiếp (Admin)
+- Click vào ô % trong modal chi tiết nhân viên để chỉnh sửa
+- Nút Save/Cancel hiển thị khi đang edit, hoặc Enter để lưu, Escape để hủy
+- Hiển thị thông báo thành công sau khi lưu, cảnh báo overload nếu tổng > 100%
 
 ### Import Excel
-- Upload file Excel (dinh dang IBS_Resource Plan)
-- Tu dong import nhan vien, du an va phan bo nguon luc
+- Upload file Excel (định dạng IBS_Resource Plan)
+- Tự động import nhân viên, dự án và phân bổ nguồn lực
 
-### Dark Mode
-- Chuyen doi giao dien sang/toi
-- Nut toggle trong Sidebar va trang Login
-- Luu preference vao localStorage
+### Giao diện Sáng/Tối (Dark Mode)
+- Chuyển đổi giao diện sáng/tối
+- Nút toggle trong Sidebar (phía trên navigation) và trang Login
+- Lưu preference vào localStorage
 
 ### AI Chatbot
-- Nut chat xanh duong goc phai duoi man hinh
-- Hoi dap ve nhan su, du an, phan bo nguon luc
-- Doc du lieu sau: chi tiet phan bo tung nhan vien (du an, % theo tuan), danh sach overload
-- Vi du: "Co bao nhieu nhan vien o phong ban X?", "Ai dang ranh?", "Du an nao dang hoat dong?"
-- API key bao mat: frontend goi qua backend proxy `/api/chat/`, key chi luu server-side
+- Nút chat xanh dương góc phải dưới màn hình
+- Hỏi đáp về nhân sự, dự án, phân bổ nguồn lực
+- Đọc dữ liệu sâu: chi tiết phân bổ từng nhân viên (dự án, % theo tuần), danh sách overload
+- Ví dụ: "Có bao nhiêu nhân viên ở phòng ban X?", "Ai đang rảnh?", "Dự án nào đang hoạt động?"
+- API key bảo mật: frontend gọi qua backend proxy `/api/chat/`, key chỉ lưu server-side
+- 3 model dự phòng: tự động chuyển khi model chính gặp rate limit
 
-### Sidebar co the thu gon
-- Nut dong/mo sidebar (collapse/expand)
-- Nut doi giao dien sang/toi nam TREN navigation (de nhin, de truy cap)
-- Nut dang xuat nam duoi cung voi thong tin user
-- Tat ca label tieng Viet co dau: Tong quan, Nhan su, Du an, Bang phan bo, Nhap du lieu
+### Sidebar thu gọn
+- Nút đóng/mở sidebar (collapse/expand) tích hợp trong header
+- Nút đổi giao diện sáng/tối nằm TRÊN navigation (dễ nhìn, dễ truy cập)
+- Nút đăng xuất nằm dưới cùng với thông tin user
+- Tất cả label tiếng Việt có dấu: Tổng quan, Nhân sự, Dự án, Bảng phân bổ, Nhập dữ liệu
 
 ### API
-- RESTful API day du cho employees, projects, allocations
-- API dashboard summary va resource table
+- RESTful API đầy đủ cho employees, projects, allocations
+- API dashboard summary và resource table
 - Bulk create/update allocations
-- Loc va tim kiem tren tat ca endpoints
+- Lọc và tìm kiếm trên tất cả endpoints
 - Overload detection API
 
-## Huong dan cai dat
+## Hướng dẫn cài đặt
 
-### Yeu cau
-- Docker va Docker Compose
+### Yêu cầu
+- Docker và Docker Compose
 
-### Chay ung dung
+### Chạy ứng dụng
 
 ```bash
-# Clone va di chuyen vao thu muc du an
+# Clone và di chuyển vào thư mục dự án
 cd HumanResource
 
-# Khoi dong tat ca services
+# Khởi động tất cả services
 docker-compose up --build
 
-# Truy cap ung dung
+# Truy cập ứng dụng
 # Frontend: http://localhost:3000
 # Backend API: http://localhost:8000
 # API Docs: http://localhost:8000/docs
 ```
 
-### Dang nhap
+### Đăng nhập
 
-- **Admin**: username `admin`, password `admin123` (co quyen CRUD)
-- **Nhan vien**: username `employee`, password `employee123` (chi xem)
+- **Admin**: username `admin`, password `admin123` (có quyền CRUD)
+- **Nhân viên**: username `employee`, password `employee123` (chỉ xem)
 
-### Import du lieu tu Excel
+### Import dữ liệu từ Excel
 
-1. Dang nhap voi tai khoan admin
-2. Truy cap http://localhost:3000/import
+1. Đăng nhập với tài khoản admin
+2. Truy cập http://localhost:3000/import
 3. Upload file `IBS_Resource Plan_2026.xlsx`
-4. He thong se tu dong tao nhan vien, du an va phan bo nguon luc
+4. Hệ thống sẽ tự động tạo nhân viên, dự án và phân bổ nguồn lực
 
-### Deploy len Render.com (mien phi)
+### Deploy lên Render.com (miễn phí)
 
-1. Push code len GitHub
-2. Vao [render.com](https://render.com), dang ky/dang nhap
-3. Chon **New** > **Blueprint** > ket noi GitHub repo
-4. Render se doc file `render.yaml` va tu dong tao:
+1. Push code lên GitHub
+2. Vào [render.com](https://render.com), đăng ký/đăng nhập
+3. Chọn **New** > **Blueprint** > kết nối GitHub repo
+4. Render sẽ đọc file `render.yaml` và tự động tạo:
    - PostgreSQL database (free)
    - Backend service (Docker)
    - Frontend service (Docker)
-5. Them env var `GROQ_API_KEY` cho backend service (de chatbot hoat dong)
-6. Sau khi deploy xong, cap nhat `CORS_ORIGINS` cua backend voi URL thuc te cua frontend
-7. Truy cap URL frontend de su dung
+5. Thêm env var `GROQ_API_KEY` cho backend service (để chatbot hoạt động)
+6. Sau khi deploy xong, cập nhật `CORS_ORIGINS` của backend với URL thực tế của frontend
+7. Truy cập URL frontend để sử dụng
 
-### Chay development (khong Docker)
+### Chạy development (không Docker)
 
 ```bash
 # Backend
@@ -146,7 +150,7 @@ npm install
 npm run dev
 ```
 
-## Cau truc du an
+## Cấu trúc dự án
 
 ```
 HumanResource/
@@ -174,7 +178,7 @@ HumanResource/
 │           ├── projects.py
 │           ├── allocations.py
 │           ├── dashboard.py
-│           ├── chat.py        # Groq API proxy
+│           ├── chat.py        # Groq API proxy (3 model fallback)
 │           └── import_excel.py
 ├── frontend/
 │   ├── Dockerfile
@@ -183,12 +187,12 @@ HumanResource/
 │       ├── app/               # Next.js pages
 │       │   ├── layout.tsx     # Root layout (Providers)
 │       │   ├── providers.tsx  # Theme + Auth providers
-│       │   ├── page.tsx       # Dashboard
-│       │   ├── login/         # Trang dang nhap
-│       │   ├── employees/     # Quan ly nhan su
-│       │   ├── projects/      # Quan ly du an
-│       │   ├── resource-table/# Bang phan bo
-│       │   └── import/        # Import Excel
+│       │   ├── page.tsx       # Dashboard (Tổng quan)
+│       │   ├── login/         # Trang đăng nhập
+│       │   ├── employees/     # Quản lý nhân sự
+│       │   ├── projects/      # Quản lý dự án
+│       │   ├── resource-table/# Bảng phân bổ
+│       │   └── import/        # Nhập dữ liệu Excel
 │       ├── components/        # React components
 │       │   ├── Sidebar.tsx
 │       │   ├── StatCard.tsx
@@ -208,26 +212,26 @@ HumanResource/
 
 ## API Endpoints
 
-| Method | Endpoint | Mo ta | Auth |
+| Method | Endpoint | Mô tả | Auth |
 |--------|----------|-------|------|
-| POST | /api/auth/login | Dang nhap (JWT) | Public |
-| GET | /api/auth/me | Thong tin user | Login |
-| POST | /api/auth/register | Dang ky user | Admin |
-| POST | /api/auth/seed-admin | Tao tai khoan mac dinh | Public |
-| GET | /api/employees/ | Danh sach nhan vien | Public |
-| POST | /api/employees/ | Them nhan vien | Admin |
-| PUT | /api/employees/{id} | Cap nhat nhan vien | Admin |
-| DELETE | /api/employees/{id} | Xoa nhan vien | Admin |
-| GET | /api/projects/ | Danh sach du an | Public |
-| POST | /api/projects/ | Them du an | Admin |
-| PUT | /api/projects/{id} | Cap nhat du an | Admin |
-| DELETE | /api/projects/{id} | Xoa du an | Admin |
-| GET | /api/allocations/ | Danh sach phan bo | Public |
-| POST | /api/allocations/ | Them phan bo | Admin |
-| GET | /api/allocations/overload | Nhan vien qua tai | Public |
-| POST | /api/allocations/bulk | Them/cap nhat nhieu phan bo | Admin |
-| GET | /api/dashboard/summary | Tong quan dashboard | Public |
-| GET | /api/dashboard/resource-table | Bang phan bo nguon luc | Public |
-| GET | /api/dashboard/employee-detail/{id} | Chi tiet phan bo nhan vien | Public |
-| POST | /api/chat/ | Proxy chat toi Groq API | Public |
-| POST | /api/import/excel | Import du lieu tu Excel | Public |
+| POST | /api/auth/login | Đăng nhập (JWT) | Public |
+| GET | /api/auth/me | Thông tin user | Login |
+| POST | /api/auth/register | Đăng ký user | Admin |
+| POST | /api/auth/seed-admin | Tạo tài khoản mặc định | Public |
+| GET | /api/employees/ | Danh sách nhân viên | Public |
+| POST | /api/employees/ | Thêm nhân viên | Admin |
+| PUT | /api/employees/{id} | Cập nhật nhân viên | Admin |
+| DELETE | /api/employees/{id} | Xóa nhân viên | Admin |
+| GET | /api/projects/ | Danh sách dự án | Public |
+| POST | /api/projects/ | Thêm dự án | Admin |
+| PUT | /api/projects/{id} | Cập nhật dự án | Admin |
+| DELETE | /api/projects/{id} | Xóa dự án | Admin |
+| GET | /api/allocations/ | Danh sách phân bổ | Public |
+| POST | /api/allocations/ | Thêm phân bổ | Admin |
+| GET | /api/allocations/overload | Nhân viên quá tải | Public |
+| POST | /api/allocations/bulk | Thêm/cập nhật nhiều phân bổ | Admin |
+| GET | /api/dashboard/summary | Tổng quan dashboard | Public |
+| GET | /api/dashboard/resource-table | Bảng phân bổ nguồn lực | Public |
+| GET | /api/dashboard/employee-detail/{id} | Chi tiết phân bổ nhân viên | Public |
+| POST | /api/chat/ | Proxy chat tới Groq API | Public |
+| POST | /api/import/excel | Import dữ liệu từ Excel | Public |

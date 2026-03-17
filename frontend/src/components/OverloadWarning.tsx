@@ -33,11 +33,11 @@ export default function OverloadWarning() {
     <div className="mb-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3">
       <button
         onClick={() => setExpanded(!expanded)}
-        className="flex items-center gap-2 w-full text-left"
+        className="flex items-center gap-2 w-full text-left cursor-pointer"
       >
         <AlertTriangle size={18} className="text-red-600 dark:text-red-400 flex-shrink-0" />
         <span className="text-sm font-medium text-red-700 dark:text-red-400 flex-1">
-          CANH BAO: {Object.keys(grouped).length} nhan vien dang bi qua tai (&gt;100%) trong 4 tuan toi
+          CẢNH BÁO: {Object.keys(grouped).length} nhân viên đang bị quá tải (&gt;100%) trong 4 tuần tới
         </span>
         {expanded ? <ChevronUp size={16} className="text-red-500" /> : <ChevronDown size={16} className="text-red-500" />}
       </button>

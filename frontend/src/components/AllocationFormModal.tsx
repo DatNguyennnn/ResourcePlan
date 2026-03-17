@@ -82,11 +82,11 @@ export default function AllocationFormModal({ open, onClose, onSuccess }: Props)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!employeeId || !projectId || !dateFrom || !dateTo) {
-      setError('Vui long dien day du thong tin.');
+      setError('Vui lòng điền đầy đủ thông tin.');
       return;
     }
     if (new Date(dateTo) < new Date(dateFrom)) {
-      setError('Ngay ket thuc phai sau ngay bat dau.');
+      setError('Ngày kết thúc phải sau ngày bắt đầu.');
       return;
     }
 
@@ -97,7 +97,7 @@ export default function AllocationFormModal({ open, onClose, onSuccess }: Props)
     try {
       const mondays = getMondays(new Date(dateFrom), new Date(dateTo));
       if (mondays.length === 0) {
-        setError('Khong co tuan nao trong khoang thoi gian nay.');
+        setError('Không có tuần nào trong khoảng thời gian này.');
         setLoading(false);
         return;
       }
@@ -120,7 +120,7 @@ export default function AllocationFormModal({ open, onClose, onSuccess }: Props)
         onClose();
       }
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Co loi xay ra khi tao phan bo.');
+      setError(err.response?.data?.detail || 'Có lỗi xảy ra khi tạo phân bổ.');
     } finally {
       setLoading(false);
     }
@@ -138,11 +138,11 @@ export default function AllocationFormModal({ open, onClose, onSuccess }: Props)
   const selectedEmpName = employees.find(e => e.id === employeeId)?.full_name || '';
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-slate-800 rounded-lg w-full max-w-lg">
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-slate-700">
-          <h2 className="font-bold text-lg text-gray-900 dark:text-slate-100">Phan bo nhan vien vao du an</h2>
-          <button onClick={onClose} className="p-1 hover:bg-gray-100 dark:hover:bg-slate-700 rounded text-gray-700 dark:text-slate-300">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-lg border border-gray-200 dark:border-slate-700">
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-slate-700 bg-gradient-to-r from-green-50 to-white dark:from-slate-800 dark:to-slate-800 rounded-t-xl">
+          <h2 className="font-bold text-lg text-gray-900 dark:text-slate-100">Phân bổ nhân viên vào dự án</h2>
+          <button onClick={onClose} className="p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg text-gray-500 dark:text-slate-400 transition-colors cursor-pointer">
             <X size={20} />
           </button>
         </div>
@@ -153,22 +153,22 @@ export default function AllocationFormModal({ open, onClose, onSuccess }: Props)
             <div className="bg-amber-50 dark:bg-amber-900/30 border border-amber-300 dark:border-amber-700 rounded-lg p-3 flex items-start gap-2">
               <AlertTriangle size={18} className="text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
               <div className="text-sm text-amber-800 dark:text-amber-300">
-                <strong>Canh bao:</strong> {selectedEmpName} dang duoc phan bo <strong>{Math.round(currentLoad! * 100)}%</strong> trong khoang thoi gian nay.
-                Them phan bo se vuot qua 100%. Van co the tiep tuc nhung nhan vien se bi qua tai.
+                <strong>Cảnh báo:</strong> {selectedEmpName} đang được phân bổ <strong>{Math.round(currentLoad! * 100)}%</strong> trong khoảng thời gian này.
+                Thêm phân bổ sẽ vượt quá 100%. Vẫn có thể tiếp tục nhưng nhân viên sẽ bị quá tải.
               </div>
             </div>
           )}
 
           {/* Employee Select */}
           <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-slate-300">Nhan vien</label>
+            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-slate-300">Nhân viên</label>
             <select
               value={employeeId}
               onChange={(e) => setEmployeeId(e.target.value ? Number(e.target.value) : '')}
               required
               className="w-full border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-slate-700 dark:text-slate-100"
             >
-              <option value="">-- Chon nhan vien --</option>
+              <option value="">-- Chọn nhân viên --</option>
               {employees.map(emp => (
                 <option key={emp.id} value={emp.id}>{emp.full_name} ({emp.department})</option>
               ))}
@@ -177,14 +177,14 @@ export default function AllocationFormModal({ open, onClose, onSuccess }: Props)
 
           {/* Project Select */}
           <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-slate-300">Du an</label>
+            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-slate-300">Dự án</label>
             <select
               value={projectId}
               onChange={(e) => setProjectId(e.target.value ? Number(e.target.value) : '')}
               required
               className="w-full border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-slate-700 dark:text-slate-100"
             >
-              <option value="">-- Chon du an --</option>
+              <option value="">-- Chọn dự án --</option>
               {projects.map(proj => (
                 <option key={proj.id} value={proj.id}>{proj.project_name} [{proj.project_code}]</option>
               ))}
@@ -193,7 +193,7 @@ export default function AllocationFormModal({ open, onClose, onSuccess }: Props)
 
           {/* Percentage */}
           <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-slate-300">Ty le phan bo (%)</label>
+            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-slate-300">Tỷ lệ phân bổ (%)</label>
             <input
               type="number"
               min="1"
@@ -205,7 +205,7 @@ export default function AllocationFormModal({ open, onClose, onSuccess }: Props)
             />
             {currentLoad !== null && !checkingLoad && (
               <p className="text-xs mt-1 text-gray-500 dark:text-slate-400">
-                Hien tai: {Math.round(currentLoad * 100)}% | Sau khi them: {Math.round(currentLoad * 100) + percentage}%
+                Hiện tại: {Math.round(currentLoad * 100)}% | Sau khi thêm: {Math.round(currentLoad * 100) + percentage}%
               </p>
             )}
           </div>
@@ -213,7 +213,7 @@ export default function AllocationFormModal({ open, onClose, onSuccess }: Props)
           {/* Date Range */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-slate-300">Tu ngay</label>
+              <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-slate-300">Từ ngày</label>
               <input
                 type="date"
                 value={dateFrom}
@@ -223,7 +223,7 @@ export default function AllocationFormModal({ open, onClose, onSuccess }: Props)
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-slate-300">Den ngay</label>
+              <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-slate-300">Đến ngày</label>
               <input
                 type="date"
                 value={dateTo}
@@ -236,7 +236,7 @@ export default function AllocationFormModal({ open, onClose, onSuccess }: Props)
 
           {dateFrom && dateTo && new Date(dateTo) >= new Date(dateFrom) && (
             <p className="text-xs text-gray-500 dark:text-slate-400">
-              Se phan bo cho <strong>{getMondays(new Date(dateFrom), new Date(dateTo)).length}</strong> tuan (tinh theo ngay Monday)
+              Sẽ phân bổ cho <strong>{getMondays(new Date(dateFrom), new Date(dateTo)).length}</strong> tuần (tính theo ngày thứ Hai)
             </p>
           )}
 
@@ -245,7 +245,7 @@ export default function AllocationFormModal({ open, onClose, onSuccess }: Props)
             <div className="bg-amber-50 dark:bg-amber-900/30 border border-amber-300 dark:border-amber-700 rounded-lg p-3">
               <div className="flex items-center gap-2 mb-2">
                 <AlertTriangle size={16} className="text-amber-600 dark:text-amber-400" />
-                <span className="text-sm font-medium text-amber-800 dark:text-amber-300">Phan bo thanh cong nhung co canh bao:</span>
+                <span className="text-sm font-medium text-amber-800 dark:text-amber-300">Phân bổ thành công nhưng có cảnh báo:</span>
               </div>
               <ul className="text-sm text-amber-700 dark:text-amber-400 space-y-1 list-disc pl-5">
                 {warnings.map((w, i) => <li key={i}>{w}</li>)}
@@ -253,9 +253,9 @@ export default function AllocationFormModal({ open, onClose, onSuccess }: Props)
               <button
                 type="button"
                 onClick={handleForceClose}
-                className="mt-3 w-full bg-amber-600 text-white py-2 rounded-lg text-sm hover:bg-amber-700"
+                className="mt-3 w-full bg-amber-600 text-white py-2 rounded-lg text-sm hover:bg-amber-700 transition-colors cursor-pointer"
               >
-                Da hieu, dong lai
+                Đã hiểu, đóng lại
               </button>
             </div>
           )}
@@ -271,16 +271,16 @@ export default function AllocationFormModal({ open, onClose, onSuccess }: Props)
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 bg-green-600 text-white py-2 rounded-lg text-sm hover:bg-green-700 disabled:opacity-50"
+                className="flex-1 bg-green-600 text-white py-2 rounded-lg text-sm hover:bg-green-700 disabled:opacity-50 transition-colors cursor-pointer"
               >
-                {loading ? 'Dang xu ly...' : 'Phan bo'}
+                {loading ? 'Đang xử lý...' : 'Phân bổ'}
               </button>
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 border border-gray-300 dark:border-slate-600 py-2 rounded-lg text-sm hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-700 dark:text-slate-300"
+                className="flex-1 border border-gray-300 dark:border-slate-600 py-2 rounded-lg text-sm hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-700 dark:text-slate-300 transition-colors cursor-pointer"
               >
-                Huy
+                Hủy
               </button>
             </div>
           )}

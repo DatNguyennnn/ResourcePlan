@@ -87,7 +87,7 @@ export default function ProjectsPage() {
           {isAdmin && (
             <button
               onClick={() => { setEditing(null); setForm({ project_code: '', project_name: '', description: '', pm: '', status: PROJECT_STATUSES[0] }); setShowForm(true); }}
-              className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-700"
+              className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-700 transition-colors cursor-pointer"
             >
               <Plus size={16} /> Thêm dự án
             </button>
@@ -135,8 +135,8 @@ export default function ProjectsPage() {
                   </td>
                   {isAdmin && (
                     <td className="px-4 py-2 text-center">
-                      <button onClick={() => handleEdit(proj)} className="p-1 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded text-blue-600 dark:text-blue-400 mr-1"><Pencil size={14} /></button>
-                      <button onClick={() => handleDelete(proj.id)} className="p-1 hover:bg-red-50 dark:hover:bg-red-900/30 rounded text-red-600 dark:text-red-400"><Trash2 size={14} /></button>
+                      <button onClick={() => handleEdit(proj)} className="p-2 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg text-blue-600 dark:text-blue-400 mr-1 transition-colors cursor-pointer" title="Chỉnh sửa"><Pencil size={16} /></button>
+                      <button onClick={() => handleDelete(proj.id)} className="p-2 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg text-red-600 dark:text-red-400 transition-colors cursor-pointer" title="Xóa"><Trash2 size={16} /></button>
                     </td>
                   )}
                 </tr>
@@ -147,11 +147,11 @@ export default function ProjectsPage() {
         </div>
 
         {showForm && (
-          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
-            <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 rounded-lg p-6 w-full max-w-lg">
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
+            <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl p-6 w-full max-w-lg border border-gray-200 dark:border-slate-700">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="font-bold text-lg text-gray-900 dark:text-slate-100">{editing ? 'Sửa dự án' : 'Thêm dự án mới'}</h2>
-                <button type="button" onClick={() => setShowForm(false)} className="p-1 hover:bg-gray-100 dark:hover:bg-slate-700 rounded text-gray-700 dark:text-slate-300"><X size={20} /></button>
+                <button type="button" onClick={() => setShowForm(false)} className="p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg text-gray-500 dark:text-slate-400 transition-colors cursor-pointer"><X size={20} /></button>
               </div>
               <div className="space-y-3">
                 <div>
@@ -183,10 +183,10 @@ export default function ProjectsPage() {
                 </div>
               </div>
               <div className="flex gap-2 mt-4">
-                <button type="submit" className="flex-1 bg-green-600 text-white py-2 rounded-lg text-sm hover:bg-green-700">
+                <button type="submit" className="flex-1 bg-green-600 text-white py-2 rounded-lg text-sm hover:bg-green-700 transition-colors cursor-pointer">
                   {editing ? 'Cập nhật' : 'Thêm mới'}
                 </button>
-                <button type="button" onClick={() => setShowForm(false)} className="flex-1 border border-gray-300 dark:border-slate-600 py-2 rounded-lg text-sm hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-700 dark:text-slate-300">Hủy</button>
+                <button type="button" onClick={() => setShowForm(false)} className="flex-1 border border-gray-300 dark:border-slate-600 py-2 rounded-lg text-sm hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-700 dark:text-slate-300 transition-colors cursor-pointer">Hủy</button>
               </div>
             </form>
           </div>
