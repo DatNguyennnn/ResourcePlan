@@ -123,8 +123,7 @@ def get_dashboard_summary(
             func.sum(ResourceAllocation.allocation_percentage).label("total"),
         )
         .join(Employee, ResourceAllocation.employee_id == Employee.id)
-        .filter(ResourceAllocation.week_start >= current_week_start - timedelta(days=7))
-        .filter(ResourceAllocation.week_start <= current_week_start + timedelta(days=7))
+        .filter(ResourceAllocation.week_start == current_week_start)
     )
     if department:
         current_allocs = current_allocs.filter(Employee.department == department)
@@ -162,9 +161,9 @@ def get_resource_table(
 ):
     """Returns the resource allocation table (employee x week with total allocation)."""
     if not week_from:
-        week_from = date.today() - timedelta(weeks=4)
+        week_from = date(date.today().year, 1, 1)
     if not week_to:
-        week_to = date.today() + timedelta(weeks=12)
+        week_to = date(date.today().year, 12, 31)
 
     query = (
         db.query(
@@ -226,9 +225,9 @@ def get_employee_detail(
         return {"error": "Employee not found"}
 
     if not week_from:
-        week_from = date.today() - timedelta(weeks=4)
+        week_from = date(date.today().year, 1, 1)
     if not week_to:
-        week_to = date.today() + timedelta(weeks=12)
+        week_to = date(date.today().year, 12, 31)
 
     allocs = (
         db.query(

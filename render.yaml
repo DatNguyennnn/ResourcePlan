@@ -19,6 +19,8 @@ services:
         value: '["https://hr-frontend-y866.onrender.com"]'
       - key: SECRET_KEY
         generateValue: true
+      - key: GROQ_API_KEY
+        sync: false
       - key: PORT
         value: "8000"
     healthCheckPath: /api/health
@@ -32,7 +34,5 @@ services:
     envVars:
       - key: NEXT_PUBLIC_API_URL
         value: https://hr-backend-7sxc.onrender.com
-      - key: NEXT_PUBLIC_GROQ_API_KEY
-        sync: false
       - key: PORT
         value: "3000"

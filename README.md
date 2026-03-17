@@ -70,10 +70,11 @@ He thong quan ly phan bo nguon luc nhan su du an cho Trung tam IBS (iERP Service
 - Hoi dap ve nhan su, du an, phan bo nguon luc
 - Doc du lieu sau: chi tiet phan bo tung nhan vien (du an, % theo tuan), danh sach overload
 - Vi du: "Co bao nhieu nhan vien o phong ban X?", "Ai dang ranh?", "Du an nao dang hoat dong?"
+- API key bao mat: frontend goi qua backend proxy `/api/chat/`, key chi luu server-side
 
 ### Sidebar co the thu gon
 - Nut dong/mo sidebar (collapse/expand)
-- Nut dang xuat + doi giao dien sang/toi nam tren cung
+- Nut dang xuat + doi giao dien sang/toi nam duoi cung voi text label
 - Tat ca label tieng Viet co dau: Tong quan, Nhan su, Du an, Bang phan bo, Nhap du lieu
 
 ### API
@@ -124,8 +125,9 @@ docker-compose up --build
    - PostgreSQL database (free)
    - Backend service (Docker)
    - Frontend service (Docker)
-5. Sau khi deploy xong, cap nhat `CORS_ORIGINS` cua backend voi URL thuc te cua frontend
-6. Truy cap URL frontend de su dung
+5. Them env var `GROQ_API_KEY` cho backend service (de chatbot hoat dong)
+6. Sau khi deploy xong, cap nhat `CORS_ORIGINS` cua backend voi URL thuc te cua frontend
+7. Truy cap URL frontend de su dung
 
 ### Chay development (khong Docker)
 
@@ -170,6 +172,7 @@ HumanResource/
 │           ├── projects.py
 │           ├── allocations.py
 │           ├── dashboard.py
+│           ├── chat.py        # Groq API proxy
 │           └── import_excel.py
 ├── frontend/
 │   ├── Dockerfile
@@ -224,4 +227,5 @@ HumanResource/
 | GET | /api/dashboard/summary | Tong quan dashboard | Public |
 | GET | /api/dashboard/resource-table | Bang phan bo nguon luc | Public |
 | GET | /api/dashboard/employee-detail/{id} | Chi tiet phan bo nhan vien | Public |
+| POST | /api/chat/ | Proxy chat toi Groq API | Public |
 | POST | /api/import/excel | Import du lieu tu Excel | Public |

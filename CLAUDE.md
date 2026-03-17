@@ -100,6 +100,18 @@ Xay dung dua tren du lieu tu file Excel `IBS_Resource Plan_2026.xlsx`.
   - Backend + Frontend web services
   - Dockerfile update: backend bo --reload, frontend dung ARG cho NEXT_PUBLIC_API_URL
 
+### 2026-03-17 - Fix bugs va UI improvements
+- **Fix Nhan su >100% sai**: backend tinh tong allocation trong +-7 ngay (2 tuan) gay cong don sai -> sua lai chi tinh dung tuan hien tai (`week_start == current_week_start`)
+- **Sidebar nut to hon**: nut Dang xuat va Doi giao dien chuyen xuong duoi, them text label ("Dang xuat", "Giao dien sang/toi"), kich thuoc lon hon de nguoi dung de nhin
+- **Mo rong date range**: employee-detail va resource-table API mo rong tu 16 tuan thanh ca nam (1/1 - 31/12), cho phep xem phan bo thang 12+
+- **Docker Compose**: them build args de truyen NEXT_PUBLIC_API_URL khi build local
+- **AI Chatbot proxy**: chuyen tu goi truc tiep Groq API o frontend sang goi qua backend proxy `/api/chat/` de bao mat API key
+  - Them `backend/app/api/chat.py`: proxy endpoint goi Groq API voi key tu server-side env var
+  - Them `GROQ_API_KEY` vao `backend/app/config.py`
+  - Them `httpx` vao backend requirements
+  - Frontend Chatbot.tsx goi `${API_URL}/api/chat/` thay vi truc tiep Groq
+  - Fix loi chatbot ko hoat dong tren Render (API key ko co luc Docker build)
+
 ## Cau truc file quan trong
 - `backend/app/main.py` - Entry point FastAPI
 - `backend/app/auth.py` - JWT auth logic (hash, verify, token, dependencies)
@@ -117,7 +129,8 @@ Xay dung dua tren du lieu tu file Excel `IBS_Resource Plan_2026.xlsx`.
 - `frontend/src/components/Sidebar.tsx` - Sidebar voi user info, logout, theme toggle
 - `frontend/src/components/ResourceTable.tsx` - Bang phan bo heatmap
 - `frontend/src/components/OverloadWarning.tsx` - Canh bao nhan vien qua tai
-- `frontend/src/components/Chatbot.tsx` - AI Chatbot (Groq API)
+- `frontend/src/components/Chatbot.tsx` - AI Chatbot (goi qua backend proxy)
+- `backend/app/api/chat.py` - Groq API proxy endpoint
 - `frontend/src/components/AllocationFormModal.tsx` - Form phan bo nhan vien vao du an
 - `docker-compose.yml` - Docker services config
 
@@ -132,4 +145,4 @@ Xay dung dua tren du lieu tu file Excel `IBS_Resource Plan_2026.xlsx`.
 - Default accounts: admin/admin123 (admin role), employee/employee123 (employee role)
 - JWT token expire: 480 phut (8 gio)
 - Backend SECRET_KEY can thay doi trong production
-- Groq API key luu trong frontend Chatbot component (client-side)
+- Groq API key luu trong backend env var (GROQ_API_KEY), frontend goi qua proxy /api/chat/

@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str = "ibs-hr-secret-key-2026-change-in-production"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 480
+    GROQ_API_KEY: str = ""
 
     class Config:
         env_file = ".env"

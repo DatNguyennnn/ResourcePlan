@@ -8,7 +8,7 @@ interface Message {
   content: string;
 }
 
-const GROQ_API_KEY = process.env.NEXT_PUBLIC_GROQ_API_KEY || '';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 export default function Chatbot() {
   const [open, setOpen] = useState(false);
@@ -140,11 +140,10 @@ ${overloadedDetails.length > 0 ? overloadedDetails.join('\n') : 'Khong co'}`;
     try {
       const context = await gatherContext();
 
-      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      const response = await fetch(`${API_URL}/api/chat/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${GROQ_API_KEY}`,
         },
         body: JSON.stringify({
           model: 'llama-3.3-70b-versatile',
