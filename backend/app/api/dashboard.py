@@ -187,10 +187,12 @@ def get_resource_table(
 
     rows = query.all()
 
-    # Build the table structure
+    # Build the table structure - only include weeks with actual allocations > 0
     employees_map = {}
     weeks_set = set()
     for row in rows:
+        if row.total_alloc <= 0:
+            continue
         if row.emp_id not in employees_map:
             employees_map[row.emp_id] = {
                 "id": row.emp_id,
@@ -202,8 +204,13 @@ def get_resource_table(
         employees_map[row.emp_id]["weeks"][week_key] = round(row.total_alloc, 2)
         weeks_set.add(week_key)
 
+    # Remove weeks where no employee has allocation (sparse columns)
+    active_weeks = set()
+    for emp in employees_map.values():
+        active_weeks.update(emp["weeks"].keys())
+
     return {
-        "weeks": sorted(weeks_set),
+        "weeks": sorted(active_weeks),
         "employees": list(employees_map.values()),
     }
 
@@ -244,6 +251,8 @@ def get_employee_detail(
     projects_map = {}
     weeks_set = set()
     for row in allocs:
+        if row.allocation_percentage <= 0:
+            continue
         if row.project_code not in projects_map:
             projects_map[row.project_code] = {
                 "project_code": row.project_code,
