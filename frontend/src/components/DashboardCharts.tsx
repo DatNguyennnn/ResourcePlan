@@ -6,6 +6,25 @@ import {
 
 const COLORS = ['#2563eb', '#f59e0b', '#10b981', '#8b5cf6', '#ef4444', '#06b6d4', '#ec4899', '#6366f1'];
 
+// Custom tooltip component for all charts
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function ChartTooltip({ active, payload, label, suffix = '' }: any) {
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="bg-slate-900/95 dark:bg-slate-800/95 backdrop-blur-sm text-white px-3 py-2 rounded-lg shadow-xl border border-slate-700/50 text-xs max-w-[220px]">
+      {label && <p className="text-slate-300 mb-1 font-medium">{label}</p>}
+      {payload.map((entry: any, i: number) => (
+        <div key={i} className="flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: entry.color || entry.fill }} />
+          <span className="text-slate-100">
+            {entry.name !== 'value' ? `${entry.name}: ` : ''}<strong>{entry.value}{suffix}</strong>
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 interface ChartProps {
   data: Record<string, number>;
   title: string;
@@ -27,7 +46,23 @@ export function PieChartCard({ data, title }: ChartProps) {
                   <Cell key={i} fill={COLORS[i % COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip formatter={(value: number, name: string) => [`${value} người`, name]} />
+              <Tooltip
+                content={({ active, payload }) => {
+                  if (!active || !payload?.length) return null;
+                  const item = payload[0];
+                  const total1 = chartData.reduce((s, d) => s + d.value, 0);
+                  const pct1 = total1 > 0 ? Math.round(((item.value as number) / total1) * 100) : 0;
+                  return (
+                    <div className="bg-slate-900/95 dark:bg-slate-800/95 backdrop-blur-sm text-white px-3 py-2 rounded-lg shadow-xl border border-slate-700/50 text-xs">
+                      <div className="flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: item.payload?.fill }} />
+                        <span className="text-slate-300">{item.name}</span>
+                      </div>
+                      <p className="text-slate-100 font-semibold mt-0.5">{item.value} người ({pct1}%)</p>
+                    </div>
+                  );
+                }}
+              />
             </PieChart>
           </ResponsiveContainer>
         </div>
@@ -63,11 +98,11 @@ export function ParticipationChart({ data, title }: LineChartProps) {
       <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">{title}</h3>
       <ResponsiveContainer width="100%" height={180}>
         <LineChart data={formatted}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-          <XAxis dataKey="weekLabel" tick={{ fontSize: 10, fill: '#94a3b8' }} />
-          <YAxis domain={[0, 100]} tick={{ fontSize: 10, fill: '#94a3b8' }} />
-          <Tooltip />
-          <Line type="monotone" dataKey="participation_rate" stroke="#2563eb" strokeWidth={2} dot={{ r: 2 }} />
+          <CartesianGrid strokeDasharray="3 3" stroke="#334155" strokeOpacity={0.3} />
+          <XAxis dataKey="weekLabel" tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={{ stroke: '#475569' }} tickLine={false} />
+          <YAxis domain={[0, 100]} tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
+          <Tooltip content={<ChartTooltip suffix="%" />} />
+          <Line type="monotone" dataKey="participation_rate" name="Tỷ lệ tham gia" stroke="#2563eb" strokeWidth={2} dot={{ r: 3, fill: '#2563eb', strokeWidth: 0 }} activeDot={{ r: 5, fill: '#2563eb', stroke: '#fff', strokeWidth: 2 }} />
         </LineChart>
       </ResponsiveContainer>
     </div>
@@ -96,11 +131,25 @@ export function ProjectStatusChart({ data, title }: BarChartProps) {
       <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">{title}</h3>
       <ResponsiveContainer width="100%" height={180}>
         <BarChart data={chartData} layout="vertical" margin={{ left: 0, right: 10 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-          <XAxis type="number" tick={{ fontSize: 10, fill: '#94a3b8' }} allowDecimals={false} />
-          <YAxis type="category" dataKey="name" width={140} tick={{ fontSize: 8, fill: '#94a3b8' }} />
-          <Tooltip />
-          <Bar dataKey="value" radius={[0, 4, 4, 0]}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#334155" strokeOpacity={0.3} horizontal={false} />
+          <XAxis type="number" tick={{ fontSize: 10, fill: '#94a3b8' }} allowDecimals={false} axisLine={{ stroke: '#475569' }} tickLine={false} />
+          <YAxis type="category" dataKey="name" width={140} tick={{ fontSize: 8, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
+          <Tooltip
+            content={({ active, payload }) => {
+              if (!active || !payload?.length) return null;
+              const item = payload[0];
+              return (
+                <div className="bg-slate-900/95 dark:bg-slate-800/95 backdrop-blur-sm text-white px-3 py-2 rounded-lg shadow-xl border border-slate-700/50 text-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: item.color || (item.payload as any)?.fill }} />
+                    <span className="text-slate-300">{item.payload?.name}</span>
+                  </div>
+                  <p className="text-slate-100 font-semibold mt-0.5">{item.value} dự án</p>
+                </div>
+              );
+            }}
+          />
+          <Bar dataKey="value" radius={[0, 6, 6, 0]} barSize={16}>
             {chartData.map((entry, i) => (
               <Cell key={i} fill={statusColors[entry.name] || COLORS[i % COLORS.length]} />
             ))}

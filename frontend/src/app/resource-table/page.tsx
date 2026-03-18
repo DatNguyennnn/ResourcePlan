@@ -9,7 +9,7 @@ import EmployeeDetailModal from '@/components/EmployeeDetailModal';
 import AllocationFormModal from '@/components/AllocationFormModal';
 import { fetchResourceTable, type ResourceTableData } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
-import { Search, Plus, Calendar } from 'lucide-react';
+import { Search, Plus, Calendar, AlertCircle } from 'lucide-react';
 
 export default function ResourceTablePage() {
   const { user, isAdmin } = useAuth();
@@ -98,6 +98,14 @@ export default function ResourceTablePage() {
             />
           </div>
         </div>
+
+        {/* Date range warning */}
+        {weekFrom && weekTo && weekFrom > weekTo && (
+          <div className="flex items-center gap-2 mb-3 px-4 py-2.5 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded-lg text-sm text-amber-700 dark:text-amber-400">
+            <AlertCircle size={16} className="flex-shrink-0" />
+            <span>&quot;Từ ngày&quot; phải nhỏ hơn hoặc bằng &quot;Đến ngày&quot;. Vui lòng điều chỉnh lại.</span>
+          </div>
+        )}
 
         {loading ? (
           <div className="flex flex-col items-center justify-center h-48 gap-3">

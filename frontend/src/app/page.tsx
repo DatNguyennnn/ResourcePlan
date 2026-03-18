@@ -11,7 +11,7 @@ import OverloadWarning from '@/components/OverloadWarning';
 import Chatbot from '@/components/Chatbot';
 import { useAuth } from '@/lib/auth';
 import { fetchDashboard, fetchResourceTable, fetchFilterOptions, seedAdmin, type DashboardSummary, type ResourceTableData, type FilterOptions } from '@/lib/api';
-import { RotateCcw } from 'lucide-react';
+import { RotateCcw, AlertCircle } from 'lucide-react';
 
 const DEFAULT_DATES = (() => {
   const now = new Date();
@@ -127,6 +127,14 @@ export default function DashboardPage() {
             </button>
           )}
         </div>
+
+        {/* Date range warning */}
+        {weekFrom && weekTo && weekFrom > weekTo && (
+          <div className="flex items-center gap-2 mb-4 px-4 py-2.5 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded-lg text-sm text-amber-700 dark:text-amber-400">
+            <AlertCircle size={16} className="flex-shrink-0" />
+            <span>&quot;Từ tuần&quot; phải nhỏ hơn hoặc bằng &quot;Đến tuần&quot;. Vui lòng điều chỉnh lại khoảng thời gian.</span>
+          </div>
+        )}
 
         {loading ? (
           <div className="flex flex-col items-center justify-center h-64 gap-3">
