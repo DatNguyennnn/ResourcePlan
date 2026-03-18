@@ -164,7 +164,7 @@ export default function AllocationFormModal({ open, onClose, onSuccess }: Props)
           <div>
             <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-slate-300">Nhân viên</label>
             <SearchSelect
-              options={employees.map(emp => ({ value: emp.id, label: `${emp.full_name} (${emp.department})` }))}
+              options={employees.map(emp => ({ value: emp.id, label: `${emp.full_name} [${emp.employee_id}] (${emp.department})` }))}
               value={employeeId}
               onChange={setEmployeeId}
               placeholder="-- Tìm và chọn nhân viên --"
