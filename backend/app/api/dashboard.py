@@ -188,6 +188,17 @@ def get_dashboard_summary(
         if row.total_alloc < 0.6 and row.week_start >= today:
             under_60_employees.add(row.full_name)
 
+    # Employees with NO future allocation at all are also under 60%
+    all_emp_names = set(e.full_name for e in emp_query.all())
+    # Employees who have ANY allocation from today onwards
+    future_allocated = set()
+    for row in weekly_util:
+        if row.week_start >= today and row.total_alloc > 0:
+            future_allocated.add(row.full_name)
+    # Employees with no future allocation = under 60%
+    no_allocation_employees = all_emp_names - future_allocated
+    under_60_employees = under_60_employees | no_allocation_employees
+
     over_100 = len(over_100_employees)
     under_60 = len(under_60_employees)
     participation_rate = 0
