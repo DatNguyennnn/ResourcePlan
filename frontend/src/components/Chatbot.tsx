@@ -58,7 +58,7 @@ export default function Chatbot() {
           week_from: weekFrom.toISOString().split('T')[0],
           week_to: weekTo.toISOString().split('T')[0],
         });
-        overloadedDetails = overloadedData.slice(0, 20).map(o =>
+        overloadedDetails = overloadedData.slice(0, 10).map(o =>
           `${o.employee_name} (${o.department}) - Tuần ${o.week}: tổng ${Math.round(o.total_percentage * 100)}% [${o.projects.map(p => `${p.name}: ${Math.round(p.percentage * 100)}%`).join(', ')}]`
         );
       } catch { /* ignore */ }
@@ -93,15 +93,14 @@ export default function Chatbot() {
           return `${e.name} (${e.department}) - TB ${Math.round(avg * 100)}%`;
         });
 
-      // Detailed per-employee project allocation from chatbot-context endpoint
+      // Detailed per-employee project allocation (compact - no weekly breakdown to save tokens)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const detailLines = chatbotDetails.map((emp: any) => {
-        const projLines = emp.projects.map((p: any) => {
-          const currentWeeks = Object.entries(p.current_weeks || {}).map(([w, pct]) => `${w}: ${pct}%`).join(', ');
-          return `  - ${p.name} [${p.code}]: TB ${p.avg_pct}%, ${p.weeks_count} tuần (${p.from} → ${p.to})${currentWeeks ? ` | Sắp tới: ${currentWeeks}` : ''}`;
-        }).join('\n');
+      const detailLines = chatbotDetails.slice(0, 30).map((emp: any) => {
+        const projLines = emp.projects.slice(0, 5).map((p: any) =>
+          `  - ${p.name}: TB ${p.avg_pct}% (${p.from}→${p.to})`
+        ).join('\n');
         return `${emp.name} (${emp.department}):\n${projLines}`;
-      }).join('\n\n');
+      }).join('\n');
 
       const context = `DỮ LIỆU HỆ THỐNG QUẢN LÝ NGUỒN LỰC IBS (cập nhật real-time):
 
@@ -133,9 +132,11 @@ ${underloaded.length > 0 ? underloaded.join('\n') : 'Không có'}
 NHÂN VIÊN QUÁ TẢI CHI TIẾT (> 100%):
 ${overloadedDetails.length > 0 ? overloadedDetails.join('\n') : 'Không có'}`;
 
-      cachedContext.current = context;
+      // Truncate context if too long (Groq has ~6000 token context for some models)
+      const trimmed = context.length > 12000 ? context.slice(0, 12000) + '\n...(dữ liệu đã được rút gọn)' : context;
+      cachedContext.current = trimmed;
       cacheTime.current = now;
-      return context;
+      return trimmed;
     } catch {
       return 'Không thể lấy dữ liệu từ hệ thống.';
     }
@@ -180,11 +181,15 @@ ${context}`,
 
       // Handle API errors from Groq
       if (data.error) {
-        const errMsg = data.error.message || data.error;
-        if (typeof errMsg === 'string' && errMsg.includes('rate_limit')) {
+        const errMsg = typeof data.error === 'string' ? data.error : (data.error.message || JSON.stringify(data.error));
+        if (errMsg.includes('rate_limit')) {
           setMessages(prev => [...prev, { role: 'assistant', content: 'Hệ thống đang bận, vui lòng thử lại sau vài giây.' }]);
+        } else if (errMsg.includes('token') || errMsg.includes('length') || errMsg.includes('too large')) {
+          // Token limit exceeded - clear cache and retry with less context
+          cachedContext.current = null;
+          setMessages(prev => [...prev, { role: 'assistant', content: 'Dữ liệu quá lớn, đang thử lại với dữ liệu gọn hơn. Vui lòng gửi lại câu hỏi.' }]);
         } else {
-          setMessages(prev => [...prev, { role: 'assistant', content: 'Có lỗi xảy ra. Vui lòng thử lại.' }]);
+          setMessages(prev => [...prev, { role: 'assistant', content: `Lỗi: ${errMsg.slice(0, 200)}` }]);
         }
         return;
       }

@@ -1,6 +1,9 @@
 from fastapi import APIRouter, Request
 from app.config import settings
 import httpx
+import logging
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/chat", tags=["chat"])
 
@@ -38,11 +41,13 @@ async def chat_proxy(request: Request):
 
                 # If Groq returned an error, try next model
                 if "error" in data:
+                    logger.warning(f"Groq model {model} error: {data['error']}")
                     last_error = data
                     continue
 
                 return data
-        except Exception:
+        except Exception as e:
+            logger.warning(f"Groq model {model} exception: {e}")
             continue
 
     # All models failed - return last error or generic
