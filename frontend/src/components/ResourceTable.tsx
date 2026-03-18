@@ -146,7 +146,11 @@ export default function ResourceTable({ data, onEmployeeClick, editable = false,
       setDetails(prev => ({ ...prev, [savedEmpId]: d }));
 
       // Recalculate employee total weeks from project details
+      // Initialize ALL visible weeks to 0 first so deleted allocations show 0 (not stale data)
       const newTotals: Record<string, number> = {};
+      for (const w of data.weeks) {
+        newTotals[w] = 0;
+      }
       for (const proj of d.projects) {
         for (const [w, v] of Object.entries(proj.weeks)) {
           newTotals[w] = (newTotals[w] || 0) + v;

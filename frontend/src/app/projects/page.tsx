@@ -1,12 +1,14 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
 import PageHeader from '@/components/PageHeader';
 import Chatbot from '@/components/Chatbot';
+import ConfirmDialog from '@/components/ConfirmDialog';
+import ToastContainer, { type ToastData } from '@/components/Toast';
 import { fetchProjects, createProject, updateProject, deleteProject, type Project } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
-import { Plus, Pencil, Trash2, Search, X } from 'lucide-react';
+import { Plus, Pencil, Trash2, Search, X, XCircle } from 'lucide-react';
 
 const PROJECT_STATUSES = [
   'Đang thực hiện (Đã có hợp đồng)',
@@ -27,6 +29,16 @@ export default function ProjectsPage() {
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Project | null>(null);
   const [form, setForm] = useState({ project_code: '', project_name: '', description: '', pm: '', status: PROJECT_STATUSES[0] });
+  const [formError, setFormError] = useState('');
+  const [deleteTarget, setDeleteTarget] = useState<{ id: number; name: string } | null>(null);
+  const [toasts, setToasts] = useState<ToastData[]>([]);
+
+  const addToast = useCallback((type: ToastData['type'], message: string) => {
+    setToasts(prev => [...prev, { id: Date.now(), type, message }]);
+  }, []);
+  const removeToast = useCallback((id: number) => {
+    setToasts(prev => prev.filter(t => t.id !== id));
+  }, []);
 
   useEffect(() => {
     if (!user) { router.push('/login'); }
@@ -43,27 +55,50 @@ export default function ProjectsPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (editing) {
-      await updateProject(editing.id, form);
-    } else {
-      await createProject(form);
+    setFormError('');
+    try {
+      if (editing) {
+        await updateProject(editing.id, form);
+        addToast('success', `Đã cập nhật dự án "${form.project_name}"`);
+      } else {
+        await createProject(form);
+        addToast('success', `Đã thêm dự án "${form.project_name}"`);
+      }
+      setShowForm(false);
+      setEditing(null);
+      load();
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { detail?: string } } };
+      if (error.response?.data?.detail) {
+        const detail = error.response.data.detail;
+        if (detail === 'Project code already exists') {
+          setFormError(`Mã dự án "${form.project_code}" đã tồn tại trong hệ thống!`);
+        } else {
+          setFormError(detail);
+        }
+      } else {
+        setFormError('Có lỗi xảy ra, vui lòng thử lại.');
+      }
     }
-    setShowForm(false);
-    setEditing(null);
-    load();
   };
 
   const handleEdit = (proj: Project) => {
     setEditing(proj);
     setForm({ project_code: proj.project_code, project_name: proj.project_name, description: proj.description || '', pm: proj.pm || '', status: proj.status });
+    setFormError('');
     setShowForm(true);
   };
 
-  const handleDelete = async (id: number) => {
-    if (confirm('Bạn có chắc muốn xóa dự án này?')) {
-      await deleteProject(id);
+  const handleDeleteConfirm = async () => {
+    if (!deleteTarget) return;
+    try {
+      await deleteProject(deleteTarget.id);
+      addToast('success', `Đã xóa dự án "${deleteTarget.name}"`);
       load();
+    } catch {
+      addToast('error', 'Không thể xóa dự án. Vui lòng thử lại.');
     }
+    setDeleteTarget(null);
   };
 
   const getStatusColor = (status: string) => {
@@ -86,7 +121,7 @@ export default function ProjectsPage() {
         <PageHeader title="Dự án">
           {isAdmin && (
             <button
-              onClick={() => { setEditing(null); setForm({ project_code: '', project_name: '', description: '', pm: '', status: PROJECT_STATUSES[0] }); setShowForm(true); }}
+              onClick={() => { setEditing(null); setForm({ project_code: '', project_name: '', description: '', pm: '', status: PROJECT_STATUSES[0] }); setFormError(''); setShowForm(true); }}
               className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors cursor-pointer"
             >
               <Plus size={16} /> Thêm dự án
@@ -136,7 +171,7 @@ export default function ProjectsPage() {
                   {isAdmin && (
                     <td className="px-4 py-2 text-center">
                       <button onClick={() => handleEdit(proj)} className="p-2 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg text-blue-600 dark:text-blue-400 mr-1 transition-colors cursor-pointer" title="Chỉnh sửa"><Pencil size={16} /></button>
-                      <button onClick={() => handleDelete(proj.id)} className="p-2 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg text-red-600 dark:text-red-400 transition-colors cursor-pointer" title="Xóa"><Trash2 size={16} /></button>
+                      <button onClick={() => setDeleteTarget({ id: proj.id, name: proj.project_name })} className="p-2 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg text-red-600 dark:text-red-400 transition-colors cursor-pointer" title="Xóa"><Trash2 size={16} /></button>
                     </td>
                   )}
                 </tr>
@@ -153,11 +188,20 @@ export default function ProjectsPage() {
                 <h2 className="font-bold text-lg text-gray-900 dark:text-slate-100">{editing ? 'Sửa dự án' : 'Thêm dự án mới'}</h2>
                 <button type="button" onClick={() => setShowForm(false)} className="p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg text-gray-500 dark:text-slate-400 transition-colors cursor-pointer"><X size={20} /></button>
               </div>
+              {/* Error alert */}
+              {formError && (
+                <div className="mb-4 flex items-start gap-2 px-3 py-2.5 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 animate-slideDown">
+                  <XCircle size={18} className="text-red-500 mt-0.5 flex-shrink-0" />
+                  <p className="text-sm text-red-700 dark:text-red-300">{formError}</p>
+                </div>
+              )}
               <div className="space-y-3">
                 <div>
                   <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-slate-300">Mã dự án</label>
-                  <input required value={form.project_code} onChange={(e) => setForm({ ...form, project_code: e.target.value })} disabled={!!editing}
-                    className="w-full border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-slate-700 dark:text-slate-100 disabled:bg-gray-100 dark:disabled:bg-slate-600" />
+                  <input required value={form.project_code} onChange={(e) => { setForm({ ...form, project_code: e.target.value }); setFormError(''); }} disabled={!!editing}
+                    className={`w-full border rounded-lg px-3 py-2 text-sm bg-white dark:bg-slate-700 dark:text-slate-100 disabled:bg-gray-100 dark:disabled:bg-slate-600 ${
+                      formError && formError.includes('Mã dự án') ? 'border-red-400 dark:border-red-500 ring-1 ring-red-400/30' : 'border-slate-300 dark:border-slate-600'
+                    }`} />
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-slate-300">Tên dự án</label>
@@ -191,6 +235,20 @@ export default function ProjectsPage() {
             </form>
           </div>
         )}
+
+        {/* Confirm Delete Dialog */}
+        <ConfirmDialog
+          open={!!deleteTarget}
+          title="Xóa dự án"
+          message={`Bạn có chắc muốn xóa dự án "${deleteTarget?.name}"? Hành động này không thể hoàn tác.`}
+          confirmLabel="Xóa"
+          cancelLabel="Hủy"
+          variant="danger"
+          onConfirm={handleDeleteConfirm}
+          onCancel={() => setDeleteTarget(null)}
+        />
+
+        <ToastContainer toasts={toasts} onRemove={removeToast} />
       </main>
       <Chatbot />
     </div>

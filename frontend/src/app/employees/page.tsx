@@ -1,9 +1,11 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
 import PageHeader from '@/components/PageHeader';
 import Chatbot from '@/components/Chatbot';
+import ConfirmDialog from '@/components/ConfirmDialog';
+import ToastContainer, { type ToastData } from '@/components/Toast';
 import { fetchEmployees, createEmployee, updateEmployee, deleteEmployee, type Employee } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { Plus, Pencil, Trash2, Search, X } from 'lucide-react';
@@ -23,6 +25,16 @@ export default function EmployeesPage() {
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Employee | null>(null);
   const [form, setForm] = useState({ employee_id: '', full_name: '', department: DEPARTMENTS[0], level: LEVELS[0], status: STATUSES[0] });
+  const [formError, setFormError] = useState('');
+  const [deleteTarget, setDeleteTarget] = useState<{ id: number; name: string } | null>(null);
+  const [toasts, setToasts] = useState<ToastData[]>([]);
+
+  const addToast = useCallback((type: ToastData['type'], message: string) => {
+    setToasts(prev => [...prev, { id: Date.now(), type, message }]);
+  }, []);
+  const removeToast = useCallback((id: number) => {
+    setToasts(prev => prev.filter(t => t.id !== id));
+  }, []);
 
   useEffect(() => {
     if (!user) { router.push('/login'); }
@@ -41,28 +53,51 @@ export default function EmployeesPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (editing) {
-      await updateEmployee(editing.id, form);
-    } else {
-      await createEmployee(form);
+    setFormError('');
+    try {
+      if (editing) {
+        await updateEmployee(editing.id, form);
+        addToast('success', `Đã cập nhật nhân viên "${form.full_name}"`);
+      } else {
+        await createEmployee(form);
+        addToast('success', `Đã thêm nhân viên "${form.full_name}"`);
+      }
+      setShowForm(false);
+      setEditing(null);
+      setForm({ employee_id: '', full_name: '', department: DEPARTMENTS[0], level: LEVELS[0], status: STATUSES[0] });
+      load();
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { detail?: string }, status?: number }, message?: string };
+      if (error.response?.data?.detail) {
+        const detail = error.response.data.detail;
+        if (detail === 'Employee ID already exists') {
+          setFormError(`Mã nhân viên "${form.employee_id}" đã tồn tại trong hệ thống!`);
+        } else {
+          setFormError(detail);
+        }
+      } else {
+        setFormError('Có lỗi xảy ra, vui lòng thử lại.');
+      }
     }
-    setShowForm(false);
-    setEditing(null);
-    setForm({ employee_id: '', full_name: '', department: DEPARTMENTS[0], level: LEVELS[0], status: STATUSES[0] });
-    load();
   };
 
   const handleEdit = (emp: Employee) => {
     setEditing(emp);
     setForm({ employee_id: emp.employee_id, full_name: emp.full_name, department: emp.department, level: emp.level, status: emp.status });
+    setFormError('');
     setShowForm(true);
   };
 
-  const handleDelete = async (id: number) => {
-    if (confirm('Bạn có chắc muốn xóa nhân viên này?')) {
-      await deleteEmployee(id);
+  const handleDeleteConfirm = async () => {
+    if (!deleteTarget) return;
+    try {
+      await deleteEmployee(deleteTarget.id);
+      addToast('success', `Đã xóa nhân viên "${deleteTarget.name}"`);
       load();
+    } catch {
+      addToast('error', 'Không thể xóa nhân viên. Vui lòng thử lại.');
     }
+    setDeleteTarget(null);
   };
 
   if (!user) return null;
@@ -74,7 +109,7 @@ export default function EmployeesPage() {
         <PageHeader title="Quản lý Nhân sự">
           {isAdmin && (
             <button
-              onClick={() => { setEditing(null); setForm({ employee_id: '', full_name: '', department: DEPARTMENTS[0], level: LEVELS[0], status: STATUSES[0] }); setShowForm(true); }}
+              onClick={() => { setEditing(null); setForm({ employee_id: '', full_name: '', department: DEPARTMENTS[0], level: LEVELS[0], status: STATUSES[0] }); setFormError(''); setShowForm(true); }}
               className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors cursor-pointer"
             >
               <Plus size={16} /> Thêm nhân viên
@@ -148,7 +183,7 @@ export default function EmployeesPage() {
                       <button onClick={() => handleEdit(emp)} className="p-2 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg text-blue-600 dark:text-blue-400 mr-1 transition-colors cursor-pointer" title="Chỉnh sửa">
                         <Pencil size={16} />
                       </button>
-                      <button onClick={() => handleDelete(emp.id)} className="p-2 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg text-red-600 dark:text-red-400 transition-colors cursor-pointer" title="Xóa">
+                      <button onClick={() => setDeleteTarget({ id: emp.id, name: emp.full_name })} className="p-2 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg text-red-600 dark:text-red-400 transition-colors cursor-pointer" title="Xóa">
                         <Trash2 size={16} />
                       </button>
                     </td>
@@ -170,11 +205,20 @@ export default function EmployeesPage() {
                 <h2 className="font-bold text-lg text-gray-900 dark:text-slate-100">{editing ? 'Sửa nhân viên' : 'Thêm nhân viên mới'}</h2>
                 <button type="button" onClick={() => setShowForm(false)} className="p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg text-gray-500 dark:text-slate-400 transition-colors cursor-pointer"><X size={20} /></button>
               </div>
+              {/* Error alert */}
+              {formError && (
+                <div className="mb-4 flex items-start gap-2 px-3 py-2.5 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 animate-slideDown">
+                  <XCircle size={18} className="text-red-500 mt-0.5 flex-shrink-0" />
+                  <p className="text-sm text-red-700 dark:text-red-300">{formError}</p>
+                </div>
+              )}
               <div className="space-y-3">
                 <div>
                   <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-slate-300">Mã nhân viên</label>
-                  <input required value={form.employee_id} onChange={(e) => setForm({ ...form, employee_id: e.target.value })} disabled={!!editing}
-                    className="w-full border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-slate-700 dark:text-slate-100 disabled:bg-gray-100 dark:disabled:bg-slate-600" />
+                  <input required value={form.employee_id} onChange={(e) => { setForm({ ...form, employee_id: e.target.value }); setFormError(''); }} disabled={!!editing}
+                    className={`w-full border rounded-lg px-3 py-2 text-sm bg-white dark:bg-slate-700 dark:text-slate-100 disabled:bg-gray-100 dark:disabled:bg-slate-600 ${
+                      formError && formError.includes('Mã nhân viên') ? 'border-red-400 dark:border-red-500 ring-1 ring-red-400/30' : 'border-slate-300 dark:border-slate-600'
+                    }`} />
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-slate-300">Họ và tên</label>
@@ -214,6 +258,21 @@ export default function EmployeesPage() {
             </form>
           </div>
         )}
+
+        {/* Confirm Delete Dialog */}
+        <ConfirmDialog
+          open={!!deleteTarget}
+          title="Xóa nhân viên"
+          message={`Bạn có chắc muốn xóa nhân viên "${deleteTarget?.name}"? Hành động này không thể hoàn tác.`}
+          confirmLabel="Xóa"
+          cancelLabel="Hủy"
+          variant="danger"
+          onConfirm={handleDeleteConfirm}
+          onCancel={() => setDeleteTarget(null)}
+        />
+
+        {/* Toast notifications */}
+        <ToastContainer toasts={toasts} onRemove={removeToast} />
       </main>
       <Chatbot />
     </div>

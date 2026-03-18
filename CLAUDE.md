@@ -241,6 +241,27 @@ Xây dựng dựa trên dữ liệu từ file Excel `IBS_Resource Plan_2026.xlsx
 - **Fix "Xóa lọc" hiện sai**: nút chỉ hiện khi filter thực sự thay đổi (bỏ qua trường hợp date bị xóa rỗng)
 - **Chatbot resilient**: `fetchChatbotContext()` được gọi riêng, nếu lỗi vẫn hoạt động bình thường với dữ liệu cơ bản
 
+### 2026-03-18 - Custom confirm dialog, toast notifications, error handling
+- **ConfirmDialog component** (`frontend/src/components/ConfirmDialog.tsx`):
+  - Thay thế `window.confirm()` xấu bằng custom modal đẹp
+  - Icon cảnh báo, backdrop blur, animate-modalIn, variant danger/warning
+  - Áp dụng cho trang Nhân sự và Dự án (xóa nhân viên/dự án)
+- **Toast notifications** (`frontend/src/components/Toast.tsx`):
+  - Toast container fixed top-right, auto-dismiss sau 4 giây
+  - 4 loại: success (emerald), error (red), warning (amber), info (blue)
+  - Slide-down animation, nút X đóng
+  - Hiển thị sau khi thêm/sửa/xóa thành công hoặc thất bại
+- **Cảnh báo trùng mã nhân viên**:
+  - Backend đã check `Employee ID already exists` (400)
+  - Frontend `handleSubmit` thêm try/catch, hiển thị lỗi inline trong form
+  - Input mã NV highlight đỏ khi trùng, thông báo rõ ràng tiếng Việt
+- **Cảnh báo trùng mã dự án**:
+  - Backend đã check `Project code already exists` (400)
+  - Frontend `handleSubmit` thêm try/catch, hiển thị lỗi inline trong form
+- **Fix 0% không cập nhật realtime**:
+  - `weekOverrides` khởi tạo tất cả tuần = 0 trước khi tính tổng
+  - Khi xóa allocation (set 0%), employee row cập nhật ngay lập tức
+
 ## Cấu trúc file quan trọng
 - `backend/app/main.py` - Entry point FastAPI
 - `backend/app/auth.py` - JWT auth logic (hash, verify, token, dependencies)
@@ -266,6 +287,9 @@ Xây dựng dựa trên dữ liệu từ file Excel `IBS_Resource Plan_2026.xlsx
 - `frontend/src/components/Chatbot.tsx` - AI Chatbot (gọi qua backend proxy)
 - `frontend/src/components/AllocationFormModal.tsx` - Form phân bổ nhân viên vào dự án
 - `frontend/src/components/EmployeeDetailModal.tsx` - Chi tiết phân bổ + inline edit
+- `frontend/src/components/ConfirmDialog.tsx` - Custom confirm dialog (thay thế window.confirm)
+- `frontend/src/components/Toast.tsx` - Toast notifications (success/error/warning/info)
+- `frontend/src/components/SearchSelect.tsx` - Searchable dropdown (tìm kiếm nhân viên/dự án)
 - `docker-compose.yml` - Docker services config
 
 ## Lưu ý khi phát triển
