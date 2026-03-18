@@ -36,9 +36,10 @@ interface Props {
   onEmployeeClick?: (empId: number) => void;
   editable?: boolean;
   onDataChanged?: () => void;
+  showAllWeeks?: boolean;
 }
 
-export default function ResourceTable({ data, onEmployeeClick, editable = false, onDataChanged }: Props) {
+export default function ResourceTable({ data, onEmployeeClick, editable = false, onDataChanged, showAllWeeks = false }: Props) {
   const { isAdmin } = useAuth();
   const [expandedIds, setExpandedIds] = useState<Set<number>>(new Set());
   const [details, setDetails] = useState<Record<number, EmployeeDetail>>({});
@@ -75,7 +76,7 @@ export default function ResourceTable({ data, onEmployeeClick, editable = false,
   }, [monthGroups]);
 
   const [monthPage, setMonthPage] = useState(currentMonthIdx);
-  const visibleWeeks = monthGroups[monthPage]?.weeks ?? data.weeks;
+  const visibleWeeks = showAllWeeks ? data.weeks : (monthGroups[monthPage]?.weeks ?? data.weeks);
   const monthLabel = monthGroups[monthPage]?.label ?? '';
 
   const grouped = useMemo(() => {
@@ -155,7 +156,7 @@ export default function ResourceTable({ data, onEmployeeClick, editable = false,
         <span className="text-xs text-slate-500 dark:text-slate-400">
           Tổng: <strong>{data.employees.length}</strong> nhân viên · <strong>{data.weeks.length}</strong> tuần
         </span>
-        {monthGroups.length > 1 && (
+        {monthGroups.length > 1 && !showAllWeeks && (
           <div className="flex items-center gap-2">
             <button
               onClick={() => setMonthPage(p => Math.max(0, p - 1))}

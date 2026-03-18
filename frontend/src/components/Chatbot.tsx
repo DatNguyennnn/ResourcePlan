@@ -1,7 +1,7 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
 import { MessageCircle, X, Send, Bot, User, RefreshCw } from 'lucide-react';
-import { fetchDashboard, fetchEmployees, fetchProjects, fetchResourceTable, fetchOverloaded } from '@/lib/api';
+import { fetchDashboard, fetchEmployees, fetchProjects, fetchResourceTable, fetchOverloaded, fetchChatbotContext } from '@/lib/api';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -33,11 +33,12 @@ export default function Chatbot() {
     }
 
     try {
-      const [dashboard, employees, projects, resourceTable] = await Promise.all([
+      const [dashboard, employees, projects, resourceTable, chatbotDetails] = await Promise.all([
         fetchDashboard(),
         fetchEmployees(),
         fetchProjects(),
         fetchResourceTable(),
+        fetchChatbotContext(),
       ]);
 
       // Fetch overloaded employees (lightweight)
@@ -87,6 +88,16 @@ export default function Chatbot() {
           return `${e.name} (${e.department}) - TB ${Math.round(avg * 100)}%`;
         });
 
+      // Detailed per-employee project allocation from chatbot-context endpoint
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const detailLines = (chatbotDetails as any[]).map((emp: any) => {
+        const projLines = emp.projects.map((p: any) => {
+          const currentWeeks = Object.entries(p.current_weeks || {}).map(([w, pct]) => `${w}: ${pct}%`).join(', ');
+          return `  - ${p.name} [${p.code}]: TB ${p.avg_pct}%, ${p.weeks_count} tuần (${p.from} → ${p.to})${currentWeeks ? ` | Sắp tới: ${currentWeeks}` : ''}`;
+        }).join('\n');
+        return `${emp.name} (${emp.department}):\n${projLines}`;
+      }).join('\n\n');
+
       const context = `DỮ LIỆU HỆ THỐNG QUẢN LÝ NGUỒN LỰC IBS (cập nhật real-time):
 
 TỔNG QUAN:
@@ -107,6 +118,9 @@ ${projList}
 
 TỔNG HỢP PHÂN BỔ NGUỒN LỰC MỖI NHÂN VIÊN:
 ${allocSummary.join('\n')}
+
+CHI TIẾT PHÂN BỔ TỪNG NHÂN VIÊN (dự án, %, tuần cụ thể):
+${detailLines}
 
 NHÂN VIÊN ĐANG RẢNH (< 60% phân bổ):
 ${underloaded.length > 0 ? underloaded.join('\n') : 'Không có'}

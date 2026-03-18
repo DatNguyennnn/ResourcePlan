@@ -151,5 +151,8 @@ export const fetchAllocations = (params?: Record<string, string>) =>
 export const bulkCreateAllocation = (data: { employee_id: number; project_id: number; allocations: Record<string, number> }) =>
   api.post('/api/allocations/bulk', data).then((r) => r.data);
 
+export const fetchChatbotContext = () =>
+  api.get('/api/dashboard/chatbot-context').then((r) => r.data);
+
 export const seedAdmin = () =>
   api.post('/api/auth/seed-admin').then((r) => r.data);

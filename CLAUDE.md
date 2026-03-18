@@ -229,6 +229,16 @@ Xây dựng dựa trên dữ liệu từ file Excel `IBS_Resource Plan_2026.xlsx
 - **Bỏ hover row** trên heatmap table (trước đây hover làm mờ màu cell)
 - **Dashboard**: thêm nút "Xóa lọc" (RotateCcw icon) ở filter bar, chỉ hiện khi có filter active, reset tất cả về mặc định
 
+### 2026-03-18 - Chatbot chi tiết, Sidebar redesign, date range full weeks
+- **Chatbot xem chi tiết phân bổ**:
+  - Backend: thêm endpoint `GET /api/dashboard/chatbot-context` trả dữ liệu phân bổ chi tiết từng nhân viên (dự án, %, tuần cụ thể)
+  - Frontend: Chatbot.tsx gọi `fetchChatbotContext()` để lấy per-project allocation cho mỗi nhân viên
+  - Context bao gồm: tên dự án, mã dự án, % trung bình, số tuần, khoảng thời gian, % tuần sắp tới
+  - Fix lỗi chatbot trả lời "Không có thông tin" khi hỏi chi tiết phân bổ nhân viên
+- **Sidebar collapse hover**: nút collapse/expand chuyển thành nút tròn nổi bên cạnh sidebar, chỉ hiện khi hover vào sidebar (group-hover)
+- **Theme toggle di chuyển**: "Giao diện sáng/tối" chuyển xuống dưới "Nhập dữ liệu" (cuối navigation, trước bottom section)
+- **Date range hiển thị đầy đủ**: khi chọn ngày ở trang Phân bổ Nhân Lực, hiển thị TẤT CẢ tuần trong khoảng (không giới hạn 1 tháng/trang). Prop `showAllWeeks` bypass month pagination
+
 ## Cấu trúc file quan trọng
 - `backend/app/main.py` - Entry point FastAPI
 - `backend/app/auth.py` - JWT auth logic (hash, verify, token, dependencies)

@@ -114,7 +114,7 @@ export default function ResourceTablePage() {
               <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded alloc-20 inline-block"></span> &lt;40%</span>
               {isAdmin && <span className="text-blue-500 dark:text-blue-400 ml-2">Click ô dự án để chỉnh sửa %</span>}
             </div>
-            <ResourceTable data={data} onEmployeeClick={setSelectedEmployee} editable onDataChanged={loadData} />
+            <ResourceTable data={data} onEmployeeClick={setSelectedEmployee} editable onDataChanged={loadData} showAllWeeks={!!(weekFrom || weekTo)} />
           </>
         ) : (
           <p className="text-slate-500 dark:text-slate-400">Không có dữ liệu.</p>

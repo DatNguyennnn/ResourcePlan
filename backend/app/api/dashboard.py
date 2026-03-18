@@ -292,6 +292,80 @@ def get_resource_table(
     }
 
 
+@router.get("/chatbot-context")
+def get_chatbot_context(
+    db: Session = Depends(get_db),
+):
+    """Returns compact allocation data for all employees with project details, optimized for chatbot."""
+    today = date.today()
+    week_from = date(today.year, 1, 1)
+    week_to = date(today.year, 12, 31)
+
+    allocs = (
+        db.query(
+            Employee.id.label("emp_id"),
+            Employee.full_name,
+            Employee.department,
+            Project.project_name,
+            Project.project_code,
+            ResourceAllocation.week_start,
+            ResourceAllocation.allocation_percentage,
+        )
+        .join(Employee, ResourceAllocation.employee_id == Employee.id)
+        .join(Project, ResourceAllocation.project_id == Project.id)
+        .filter(ResourceAllocation.week_start >= week_from)
+        .filter(ResourceAllocation.week_start <= week_to)
+        .filter(ResourceAllocation.allocation_percentage > 0)
+        .order_by(Employee.full_name, Project.project_name, ResourceAllocation.week_start)
+        .all()
+    )
+
+    # Build compact structure: employee -> projects -> weeks
+    emp_map = {}
+    for row in allocs:
+        if row.emp_id not in emp_map:
+            emp_map[row.emp_id] = {
+                "name": row.full_name,
+                "department": row.department,
+                "projects": {},
+            }
+        proj_key = row.project_code
+        if proj_key not in emp_map[row.emp_id]["projects"]:
+            emp_map[row.emp_id]["projects"][proj_key] = {
+                "name": row.project_name,
+                "weeks": {},
+            }
+        week_key = row.week_start.isoformat()
+        emp_map[row.emp_id]["projects"][proj_key]["weeks"][week_key] = round(row.allocation_percentage * 100)
+
+    # Convert to list format
+    result = []
+    for emp_id, emp in emp_map.items():
+        projects = []
+        for code, proj in emp["projects"].items():
+            # Compact: only include week range and avg %
+            weeks = proj["weeks"]
+            if weeks:
+                avg_pct = sum(weeks.values()) / len(weeks)
+                week_dates = sorted(weeks.keys())
+                projects.append({
+                    "code": code,
+                    "name": proj["name"],
+                    "avg_pct": round(avg_pct),
+                    "weeks_count": len(weeks),
+                    "from": week_dates[0],
+                    "to": week_dates[-1],
+                    "current_weeks": {k: v for k, v in weeks.items() if k >= today.isoformat()},
+                })
+        result.append({
+            "name": emp["name"],
+            "department": emp["department"],
+            "projects": projects,
+        })
+
+    return result
+
+
 @router.get("/employee-detail/{employee_id}")
 def get_employee_detail(
     employee_id: int,
