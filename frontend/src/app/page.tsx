@@ -11,6 +11,7 @@ import OverloadWarning from '@/components/OverloadWarning';
 import Chatbot from '@/components/Chatbot';
 import { useAuth } from '@/lib/auth';
 import { fetchDashboard, fetchResourceTable, fetchFilterOptions, seedAdmin, type DashboardSummary, type ResourceTableData, type FilterOptions } from '@/lib/api';
+import { RotateCcw } from 'lucide-react';
 
 function getDefaultDates() {
   const now = new Date();
@@ -107,6 +108,24 @@ export default function DashboardPage() {
           <MultiSelect label="Trạng thái dự án" options={filterOpts?.project_statuses || []} selected={projectStatuses} onChange={setProjectStatuses} />
           <MultiSelect label="Quản trị dự án" options={filterOpts?.pms || []} selected={pms} onChange={setPms} />
           <MultiSelect label="Tên dự án" options={filterOpts?.project_names || []} selected={projectNames} onChange={setProjectNames} />
+          {(departments.length > 0 || levels.length > 0 || projectStatuses.length > 0 || pms.length > 0 || projectNames.length > 0 || weekFrom !== defaults.from || weekTo !== defaults.to) && (
+            <button
+              onClick={() => {
+                setWeekFrom(defaults.from);
+                setWeekTo(defaults.to);
+                setDepartments([]);
+                setLevels([]);
+                setProjectStatuses([]);
+                setPms([]);
+                setProjectNames([]);
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors cursor-pointer whitespace-nowrap"
+              title="Xóa tất cả bộ lọc"
+            >
+              <RotateCcw size={14} />
+              Xóa lọc
+            </button>
+          )}
         </div>
 
         {loading ? (

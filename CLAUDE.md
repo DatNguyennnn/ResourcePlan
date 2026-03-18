@@ -195,8 +195,9 @@ Xây dựng dựa trên dữ liệu từ file Excel `IBS_Resource Plan_2026.xlsx
   - Nhóm nhân viên theo phòng ban (department grouping header)
   - Dashboard chỉ xem (view-only), không có nút phân bổ, không có link "Điều chỉnh"
   - Legend màu hiển thị bên cạnh tiêu đề bảng
-  - Phân trang (10 nhân viên/trang) với nút điều hướng ở đầu bảng
-  - Sub-row dự án dùng cùng bảng màu heatmap (mỗi % khác màu)
+  - Phân trang theo tháng (mỗi trang = 1 tháng tuần), nút < > chuyển tháng, mặc định tháng hiện tại
+  - Multi-expand: mở nhiều nhân viên cùng lúc (không collapse người trước khi mở người sau)
+  - Sub-row dự án dùng bảng màu riêng (nhạt hơn hàng tổng) để dễ phân biệt
   - Chevron xoay mượt 90° khi expand/collapse
   - Fade animation khi chuyển trang, slide animation khi expand sub-rows
 - **Dashboard redesign**:
@@ -209,7 +210,12 @@ Xây dựng dựa trên dữ liệu từ file Excel `IBS_Resource Plan_2026.xlsx
   - 60-79%: emerald-200 text-emerald-800
   - 40-59%: amber-200 text-amber-800
   - <40%: rose-200 text-rose-800
-  - Sub-row (dự án): emerald-100 text-emerald-700
+  - Sub-row (dự án) - nhạt hơn hàng tổng, phân biệt rõ:
+    - alloc-sub-100: emerald-100 text-emerald-700
+    - alloc-sub-80: emerald-50 text-emerald-600
+    - alloc-sub-60: teal-50 text-teal-600
+    - alloc-sub-40: amber-50 text-amber-600
+    - alloc-sub-20: rose-50 text-rose-600
 - **Table header fix**: employees + projects page đổi từ bg-green-700 sang bg-slate-100/dark:bg-slate-700
 - **EmployeeDetailModal**: bỏ gradient header xanh lá, dùng bg-slate-50
 - **Sidebar**: "Bảng phân bổ" đổi thành "Phân bổ Nhân Lực", nút giao diện sáng/tối chuyển lên trên navigation
@@ -221,6 +227,7 @@ Xây dựng dựa trên dữ liệu từ file Excel `IBS_Resource Plan_2026.xlsx
   - Smooth scroll behavior
   - `transition-all duration-150` trên pagination buttons
 - **Bỏ hover row** trên heatmap table (trước đây hover làm mờ màu cell)
+- **Dashboard**: thêm nút "Xóa lọc" (RotateCcw icon) ở filter bar, chỉ hiện khi có filter active, reset tất cả về mặc định
 
 ## Cấu trúc file quan trọng
 - `backend/app/main.py` - Entry point FastAPI
@@ -242,7 +249,7 @@ Xây dựng dựa trên dữ liệu từ file Excel `IBS_Resource Plan_2026.xlsx
 - `frontend/src/components/MultiSelect.tsx` - Dropdown multi-choice filter component
 - `frontend/src/components/StatCard.tsx` - KPI card với left-border accent color
 - `frontend/src/components/DashboardCharts.tsx` - PieChart (side-legend), BarChart, LineChart (blue theme)
-- `frontend/src/components/ResourceTable.tsx` - Bảng phân bổ heatmap (green heatmap, inline dropdown, dept grouping)
+- `frontend/src/components/ResourceTable.tsx` - Bảng phân bổ heatmap (green heatmap, inline dropdown, dept grouping, multi-expand, month pagination)
 - `frontend/src/components/OverloadWarning.tsx` - Cảnh báo nhân viên quá tải
 - `frontend/src/components/Chatbot.tsx` - AI Chatbot (gọi qua backend proxy)
 - `frontend/src/components/AllocationFormModal.tsx` - Form phân bổ nhân viên vào dự án

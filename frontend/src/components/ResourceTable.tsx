@@ -1,6 +1,6 @@
 'use client';
 import { Fragment, useState, useMemo } from 'react';
-import { ChevronRight, Check, X } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Check, X } from 'lucide-react';
 import type { ResourceTableData, EmployeeDetail } from '@/lib/api';
 import { fetchEmployeeDetail, bulkCreateAllocation } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
@@ -14,10 +14,22 @@ function getAllocClass(value: number): string {
   return 'alloc-0';
 }
 
+function getSubAllocClass(value: number): string {
+  if (value >= 1.0) return 'alloc-sub-100';
+  if (value >= 0.8) return 'alloc-sub-80';
+  if (value >= 0.6) return 'alloc-sub-60';
+  if (value >= 0.4) return 'alloc-sub-40';
+  if (value > 0) return 'alloc-sub-20';
+  return 'alloc-sub-0';
+}
+
 function formatWeek(dateStr: string): string {
   const d = new Date(dateStr);
   return `${d.getDate()}/${d.getMonth() + 1}`;
 }
+
+const MONTH_NAMES = ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6',
+  'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'];
 
 interface Props {
   data: ResourceTableData;
@@ -36,6 +48,35 @@ export default function ResourceTable({ data, onEmployeeClick, editable = false,
   const [editingCell, setEditingCell] = useState<{ projectId: number; week: string } | null>(null);
   const [editValue, setEditValue] = useState('');
   const [saving, setSaving] = useState(false);
+  const [editingEmpId, setEditingEmpId] = useState<number | null>(null);
+
+  // Month pagination: group weeks by month
+  const monthGroups = useMemo(() => {
+    const groups: { month: number; year: number; label: string; weeks: string[] }[] = [];
+    const monthMap = new Map<string, string[]>();
+    for (const w of data.weeks) {
+      const d = new Date(w);
+      const key = `${d.getFullYear()}-${d.getMonth()}`;
+      if (!monthMap.has(key)) monthMap.set(key, []);
+      monthMap.get(key)!.push(w);
+    }
+    for (const [key, weeks] of monthMap) {
+      const [year, month] = key.split('-').map(Number);
+      groups.push({ month, year, label: `${MONTH_NAMES[month]} ${year}`, weeks });
+    }
+    return groups;
+  }, [data.weeks]);
+
+  // Find which month contains "today" or default to first
+  const currentMonthIdx = useMemo(() => {
+    const now = new Date();
+    const idx = monthGroups.findIndex(g => g.month === now.getMonth() && g.year === now.getFullYear());
+    return idx >= 0 ? idx : 0;
+  }, [monthGroups]);
+
+  const [monthPage, setMonthPage] = useState(currentMonthIdx);
+  const visibleWeeks = monthGroups[monthPage]?.weeks ?? data.weeks;
+  const monthLabel = monthGroups[monthPage]?.label ?? '';
 
   const grouped = useMemo(() => {
     const groups: Record<string, typeof data.employees> = {};
@@ -74,9 +115,6 @@ export default function ResourceTable({ data, onEmployeeClick, editable = false,
     setEditValue(currentVal > 0 ? String(Math.round(currentVal * 100)) : '0');
   };
 
-  // Track which employee owns the current edit
-  const [editingEmpId, setEditingEmpId] = useState<number | null>(null);
-
   const handleSave = async () => {
     if (!editingCell || !editingEmpId) return;
     const numVal = parseInt(editValue) || 0;
@@ -112,11 +150,34 @@ export default function ResourceTable({ data, onEmployeeClick, editable = false,
 
   return (
     <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
-      {/* Summary header */}
-      <div className="px-3 py-2 border-b border-slate-200 dark:border-slate-700">
+      {/* Header: summary + month navigation */}
+      <div className="px-3 py-2 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between flex-wrap gap-2">
         <span className="text-xs text-slate-500 dark:text-slate-400">
           Tổng: <strong>{data.employees.length}</strong> nhân viên · <strong>{data.weeks.length}</strong> tuần
         </span>
+        {monthGroups.length > 1 && (
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setMonthPage(p => Math.max(0, p - 1))}
+              disabled={monthPage === 0}
+              className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed text-slate-600 dark:text-slate-300 cursor-pointer transition-colors"
+              title="Tháng trước"
+            >
+              <ChevronLeft size={16} />
+            </button>
+            <span className="text-sm font-semibold text-slate-700 dark:text-slate-200 min-w-[100px] text-center">
+              {monthLabel}
+            </span>
+            <button
+              onClick={() => setMonthPage(p => Math.min(monthGroups.length - 1, p + 1))}
+              disabled={monthPage === monthGroups.length - 1}
+              className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed text-slate-600 dark:text-slate-300 cursor-pointer transition-colors"
+              title="Tháng sau"
+            >
+              <ChevronRight size={16} />
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="overflow-x-auto">
@@ -126,7 +187,7 @@ export default function ResourceTable({ data, onEmployeeClick, editable = false,
               <th className="sticky left-0 bg-slate-50 dark:bg-slate-700/50 z-10 px-3 py-2 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 whitespace-nowrap min-w-[150px]">
                 Nhân viên / DA
               </th>
-              {data.weeks.map((w) => (
+              {visibleWeeks.map((w) => (
                 <th
                   key={w}
                   className="px-0.5 py-2 text-center text-[11px] font-medium text-slate-500 dark:text-slate-400 whitespace-nowrap min-w-[44px]"
@@ -142,7 +203,7 @@ export default function ResourceTable({ data, onEmployeeClick, editable = false,
                 {/* Department header */}
                 <tr className="bg-slate-100/70 dark:bg-slate-700/30">
                   <td
-                    colSpan={data.weeks.length + 1}
+                    colSpan={visibleWeeks.length + 1}
                     className="sticky left-0 px-3 py-1 text-xs font-bold text-slate-500 dark:text-slate-400 tracking-wide"
                   >
                     {dept} ({employees.length})
@@ -168,7 +229,7 @@ export default function ResourceTable({ data, onEmployeeClick, editable = false,
                             {emp.name}
                           </span>
                         </td>
-                        {data.weeks.map((w) => {
+                        {visibleWeeks.map((w) => {
                           const val = emp.weeks[w] ?? 0;
                           return (
                             <td key={w} className={`allocation-cell ${getAllocClass(val)}`}>
@@ -182,7 +243,7 @@ export default function ResourceTable({ data, onEmployeeClick, editable = false,
                       {isExpanded && (
                         isLoading ? (
                           <tr className="bg-slate-50/50 dark:bg-slate-700/10 animate-fadeIn">
-                            <td colSpan={data.weeks.length + 1} className="py-2 text-center">
+                            <td colSpan={visibleWeeks.length + 1} className="py-2 text-center">
                               <div className="inline-flex items-center gap-2">
                                 <div className="w-3.5 h-3.5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
                                 <span className="text-xs text-slate-500 dark:text-slate-400">Đang tải...</span>
@@ -199,7 +260,7 @@ export default function ResourceTable({ data, onEmployeeClick, editable = false,
                                   <td className="sticky left-0 bg-slate-50/50 dark:bg-slate-700/10 z-10 pl-8 pr-2 py-0.5 whitespace-nowrap text-[11px] text-slate-500 dark:text-slate-400">
                                     {proj.project_code}
                                   </td>
-                                  {data.weeks.map((w) => {
+                                  {visibleWeeks.map((w) => {
                                     const val = proj.weeks[w] ?? 0;
                                     const isEditing = editingCell?.projectId === proj.project_id && editingCell?.week === w && editingEmpId === emp.id;
 
@@ -232,7 +293,7 @@ export default function ResourceTable({ data, onEmployeeClick, editable = false,
                                     return (
                                       <td
                                         key={w}
-                                        className={`allocation-cell alloc-sub ${canEdit ? 'cursor-pointer hover:ring-2 hover:ring-blue-400 hover:ring-inset' : ''}`}
+                                        className={`allocation-cell ${getSubAllocClass(val)} ${canEdit ? 'cursor-pointer hover:ring-2 hover:ring-blue-400 hover:ring-inset' : ''}`}
                                         onClick={() => { setEditingEmpId(emp.id); handleCellClick(proj.project_id, w, val); }}
                                       >
                                         {val > 0 ? `${Math.round(val * 100)}%` : canEdit ? '·' : ''}
@@ -245,7 +306,7 @@ export default function ResourceTable({ data, onEmployeeClick, editable = false,
                           </>
                         ) : (
                           <tr className="bg-slate-50/50 dark:bg-slate-700/10">
-                            <td colSpan={data.weeks.length + 1} className="pl-8 py-1.5 text-xs text-slate-400 dark:text-slate-500">
+                            <td colSpan={visibleWeeks.length + 1} className="pl-8 py-1.5 text-xs text-slate-400 dark:text-slate-500">
                               Không có dữ liệu phân bổ chi tiết.
                             </td>
                           </tr>
