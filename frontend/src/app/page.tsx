@@ -13,15 +13,20 @@ import { useAuth } from '@/lib/auth';
 import { fetchDashboard, fetchResourceTable, fetchFilterOptions, seedAdmin, type DashboardSummary, type ResourceTableData, type FilterOptions } from '@/lib/api';
 import { RotateCcw, AlertCircle } from 'lucide-react';
 
+function padDate(d: Date): string {
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+}
+
 const DEFAULT_DATES = (() => {
   const now = new Date();
   const y = now.getFullYear();
   const m = now.getMonth();
-  const from = new Date(y, m, 1);
-  const to = new Date(y, m + 3, 0);
   return {
-    from: from.toISOString().split('T')[0],
-    to: to.toISOString().split('T')[0],
+    from: padDate(new Date(y, m, 1)),
+    to: padDate(new Date(y, m + 3, 0)),
   };
 })();
 
