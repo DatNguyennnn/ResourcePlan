@@ -135,6 +135,7 @@ export function ProjectStatusChart({ data, title }: BarChartProps) {
           <XAxis type="number" tick={{ fontSize: 10, fill: '#94a3b8' }} allowDecimals={false} axisLine={{ stroke: '#475569' }} tickLine={false} />
           <YAxis type="category" dataKey="name" width={140} tick={{ fontSize: 8, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
           <Tooltip
+            cursor={{ fill: 'transparent' }}
             content={({ active, payload }) => {
               if (!active || !payload?.length) return null;
               const item = payload[0];

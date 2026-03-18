@@ -1,5 +1,5 @@
 'use client';
-import { Fragment, useState, useMemo } from 'react';
+import { Fragment, useState, useMemo, useRef } from 'react';
 import { ChevronRight, ChevronLeft, Check, X } from 'lucide-react';
 import type { ResourceTableData, EmployeeDetail } from '@/lib/api';
 import { fetchEmployeeDetail, bulkCreateAllocation } from '@/lib/api';
@@ -76,8 +76,16 @@ export default function ResourceTable({ data, onEmployeeClick, editable = false,
   }, [monthGroups]);
 
   const [monthPage, setMonthPage] = useState(currentMonthIdx);
+  const [slideDir, setSlideDir] = useState<'left' | 'right' | null>(null);
+  const slideKey = useRef(0);
   const visibleWeeks = showAllWeeks ? data.weeks : (monthGroups[monthPage]?.weeks ?? data.weeks);
   const monthLabel = monthGroups[monthPage]?.label ?? '';
+
+  const goMonth = (dir: 'prev' | 'next') => {
+    setSlideDir(dir === 'next' ? 'right' : 'left');
+    slideKey.current += 1;
+    setMonthPage(p => dir === 'next' ? Math.min(monthGroups.length - 1, p + 1) : Math.max(0, p - 1));
+  };
 
   const grouped = useMemo(() => {
     const groups: Record<string, typeof data.employees> = {};
@@ -159,7 +167,7 @@ export default function ResourceTable({ data, onEmployeeClick, editable = false,
         {monthGroups.length > 1 && !showAllWeeks && (
           <div className="flex items-center gap-2">
             <button
-              onClick={() => setMonthPage(p => Math.max(0, p - 1))}
+              onClick={() => goMonth('prev')}
               disabled={monthPage === 0}
               className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed text-slate-600 dark:text-slate-300 cursor-pointer transition-colors"
               title="Tháng trước"
@@ -170,7 +178,7 @@ export default function ResourceTable({ data, onEmployeeClick, editable = false,
               {monthLabel}
             </span>
             <button
-              onClick={() => setMonthPage(p => Math.min(monthGroups.length - 1, p + 1))}
+              onClick={() => goMonth('next')}
               disabled={monthPage === monthGroups.length - 1}
               className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed text-slate-600 dark:text-slate-300 cursor-pointer transition-colors"
               title="Tháng sau"
@@ -198,7 +206,7 @@ export default function ResourceTable({ data, onEmployeeClick, editable = false,
               ))}
             </tr>
           </thead>
-          <tbody className="animate-fadeIn">
+          <tbody key={slideKey.current} className={slideDir === 'right' ? 'animate-slideRight' : slideDir === 'left' ? 'animate-slideLeft' : 'animate-fadeIn'}>
             {Object.entries(grouped).map(([dept, employees]) => (
               <Fragment key={dept}>
                 {/* Department header */}
