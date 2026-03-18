@@ -27,8 +27,8 @@ export default function Sidebar() {
   };
 
   return (
-    <div className="relative group/sidebar flex-shrink-0">
-      <aside className={`${collapsed ? 'w-[68px]' : 'w-60'} bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 min-h-screen flex flex-col transition-all duration-300`}>
+    <div className="relative group/sidebar flex-shrink-0 sticky top-0 h-screen">
+      <aside className={`${collapsed ? 'w-[68px]' : 'w-60'} bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 h-full flex flex-col transition-all duration-300 overflow-y-auto`}>
         {/* Header */}
         <div className="p-3 border-b border-slate-200 dark:border-slate-700">
           {collapsed ? (
