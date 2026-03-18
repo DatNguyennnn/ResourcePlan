@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, Users, FolderKanban, Table2, Upload, LogOut, Moon, Sun, Shield, User, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { LayoutDashboard, Users, FolderKanban, Table2, Upload, LogOut, Moon, Sun, Shield, User, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { useAuth } from '@/lib/auth';
 import { useTheme } from '@/lib/theme';
 
@@ -113,13 +113,14 @@ export default function Sidebar() {
         </div>
       </aside>
 
-      {/* Collapse toggle - floating beside sidebar, visible on hover */}
+      {/* Collapse toggle - always visible pill beside sidebar */}
       <button
         onClick={() => setCollapsed(c => !c)}
         aria-label={collapsed ? 'Mở rộng sidebar' : 'Thu gọn sidebar'}
-        className="absolute top-4 -right-3.5 z-20 w-7 h-7 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 shadow-sm opacity-0 group-hover/sidebar:opacity-100 transition-all duration-200 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-600"
+        title={collapsed ? 'Mở rộng' : 'Thu gọn'}
+        className="absolute top-1/2 -translate-y-1/2 -right-3 z-20 w-6 h-12 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-r-lg flex items-center justify-center text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 shadow-md transition-all duration-200 cursor-pointer hover:bg-blue-50 dark:hover:bg-slate-600 hover:shadow-lg hover:w-7"
       >
-        {collapsed ? <PanelLeftOpen size={14} /> : <PanelLeftClose size={14} />}
+        {collapsed ? <ChevronsRight size={14} strokeWidth={2.5} /> : <ChevronsLeft size={14} strokeWidth={2.5} />}
       </button>
     </div>
   );
