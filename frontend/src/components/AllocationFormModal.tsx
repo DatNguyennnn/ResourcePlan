@@ -138,9 +138,9 @@ export default function AllocationFormModal({ open, onClose, onSuccess }: Props)
   const selectedEmpName = employees.find(e => e.id === employeeId)?.full_name || '';
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-lg border border-gray-200 dark:border-slate-700">
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-slate-700 bg-gradient-to-r from-green-50 to-white dark:from-slate-800 dark:to-slate-800 rounded-t-xl">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-backdropIn">
+      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-lg border border-slate-200 dark:border-slate-700 animate-modalIn">
+        <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 rounded-t-xl">
           <h2 className="font-bold text-lg text-gray-900 dark:text-slate-100">Phân bổ nhân viên vào dự án</h2>
           <button onClick={onClose} className="p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg text-gray-500 dark:text-slate-400 transition-colors cursor-pointer">
             <X size={20} />
@@ -166,7 +166,7 @@ export default function AllocationFormModal({ open, onClose, onSuccess }: Props)
               value={employeeId}
               onChange={(e) => setEmployeeId(e.target.value ? Number(e.target.value) : '')}
               required
-              className="w-full border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-slate-700 dark:text-slate-100"
+              className="w-full border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-slate-700 dark:text-slate-100"
             >
               <option value="">-- Chọn nhân viên --</option>
               {employees.map(emp => (
@@ -182,7 +182,7 @@ export default function AllocationFormModal({ open, onClose, onSuccess }: Props)
               value={projectId}
               onChange={(e) => setProjectId(e.target.value ? Number(e.target.value) : '')}
               required
-              className="w-full border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-slate-700 dark:text-slate-100"
+              className="w-full border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-slate-700 dark:text-slate-100"
             >
               <option value="">-- Chọn dự án --</option>
               {projects.map(proj => (
@@ -201,7 +201,7 @@ export default function AllocationFormModal({ open, onClose, onSuccess }: Props)
               value={percentage}
               onChange={(e) => setPercentage(Number(e.target.value))}
               required
-              className="w-full border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-slate-700 dark:text-slate-100"
+              className="w-full border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-slate-700 dark:text-slate-100"
             />
             {currentLoad !== null && !checkingLoad && (
               <p className="text-xs mt-1 text-gray-500 dark:text-slate-400">
@@ -219,7 +219,7 @@ export default function AllocationFormModal({ open, onClose, onSuccess }: Props)
                 value={dateFrom}
                 onChange={(e) => setDateFrom(e.target.value)}
                 required
-                className="w-full border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-slate-700 dark:text-slate-100"
+                className="w-full border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-slate-700 dark:text-slate-100"
               />
             </div>
             <div>
@@ -229,7 +229,7 @@ export default function AllocationFormModal({ open, onClose, onSuccess }: Props)
                 value={dateTo}
                 onChange={(e) => setDateTo(e.target.value)}
                 required
-                className="w-full border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-slate-700 dark:text-slate-100"
+                className="w-full border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-slate-700 dark:text-slate-100"
               />
             </div>
           </div>
@@ -271,14 +271,14 @@ export default function AllocationFormModal({ open, onClose, onSuccess }: Props)
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 bg-green-600 text-white py-2 rounded-lg text-sm hover:bg-green-700 disabled:opacity-50 transition-colors cursor-pointer"
+                className="flex-1 bg-blue-600 text-white py-2 rounded-lg text-sm hover:bg-blue-700 disabled:opacity-50 transition-colors cursor-pointer"
               >
                 {loading ? 'Đang xử lý...' : 'Phân bổ'}
               </button>
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 border border-gray-300 dark:border-slate-600 py-2 rounded-lg text-sm hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-700 dark:text-slate-300 transition-colors cursor-pointer"
+                className="flex-1 border border-slate-300 dark:border-slate-600 py-2 rounded-lg text-sm hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-700 dark:text-slate-300 transition-colors cursor-pointer"
               >
                 Hủy
               </button>

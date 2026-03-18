@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
+import PageHeader from '@/components/PageHeader';
 import Chatbot from '@/components/Chatbot';
 import { fetchEmployees, createEmployee, updateEmployee, deleteEmployee, type Employee } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
@@ -67,20 +68,19 @@ export default function EmployeesPage() {
   if (!user) return null;
 
   return (
-    <div className="flex bg-gray-50 dark:bg-slate-900 min-h-screen">
+    <div className="flex bg-slate-50 dark:bg-slate-900 min-h-screen">
       <Sidebar />
       <main className="flex-1 p-6">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-xl font-bold text-gray-900 dark:text-slate-100">Quản lý Nhân sự</h1>
+        <PageHeader title="Quản lý Nhân sự">
           {isAdmin && (
             <button
               onClick={() => { setEditing(null); setForm({ employee_id: '', full_name: '', department: DEPARTMENTS[0], level: LEVELS[0], status: STATUSES[0] }); setShowForm(true); }}
-              className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-700 transition-colors cursor-pointer"
+              className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors cursor-pointer"
             >
               <Plus size={16} /> Thêm nhân viên
             </button>
           )}
-        </div>
+        </PageHeader>
 
         {/* Filters */}
         <div className="flex gap-3 mb-4">
@@ -91,18 +91,18 @@ export default function EmployeesPage() {
               placeholder="Tìm kiếm theo tên..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-slate-700 dark:text-slate-100"
+              className="w-full pl-9 pr-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-slate-700 dark:text-slate-100"
             />
           </div>
-          <select value={filterDept} onChange={(e) => setFilterDept(e.target.value)} className="border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-slate-700 dark:text-slate-100">
+          <select value={filterDept} onChange={(e) => setFilterDept(e.target.value)} className="border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-slate-700 dark:text-slate-100">
             <option value="">Tất cả phòng ban</option>
             {DEPARTMENTS.map((d) => <option key={d} value={d}>{d}</option>)}
           </select>
-          <select value={filterLevel} onChange={(e) => setFilterLevel(e.target.value)} className="border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-slate-700 dark:text-slate-100">
+          <select value={filterLevel} onChange={(e) => setFilterLevel(e.target.value)} className="border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-slate-700 dark:text-slate-100">
             <option value="">Tất cả level</option>
             {LEVELS.map((l) => <option key={l} value={l}>{l}</option>)}
           </select>
-          <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-slate-700 dark:text-slate-100">
+          <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-slate-700 dark:text-slate-100">
             <option value="">Tất cả trạng thái</option>
             {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
           </select>
@@ -112,14 +112,14 @@ export default function EmployeesPage() {
         <div className="bg-white dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-slate-700 overflow-hidden">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-green-700 text-white">
-                <th className="px-4 py-3 text-left">#</th>
-                <th className="px-4 py-3 text-left">Mã NV</th>
-                <th className="px-4 py-3 text-left">Họ và Tên</th>
-                <th className="px-4 py-3 text-left">Phòng ban</th>
-                <th className="px-4 py-3 text-left">Level</th>
-                <th className="px-4 py-3 text-left">Trạng thái</th>
-                {isAdmin && <th className="px-4 py-3 text-center">Thao tác</th>}
+              <tr className="bg-slate-100 dark:bg-slate-700">
+                <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-300">#</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-300">Mã NV</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-300">Họ và Tên</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-300">Phòng ban</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-300">Level</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-300">Trạng thái</th>
+                {isAdmin && <th className="px-4 py-3 text-center text-xs font-semibold text-slate-600 dark:text-slate-300">Thao tác</th>}
               </tr>
             </thead>
             <tbody>
@@ -133,12 +133,12 @@ export default function EmployeesPage() {
                     <span className={`px-2 py-0.5 rounded text-xs font-medium ${
                       emp.level === 'Senior' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-400' :
                       emp.level === 'Experienced' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400' :
-                      'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400'
+                      'bg-green-100 text-green-700 dark:bg-blue-900/40 dark:text-blue-400'
                     }`}>{emp.level}</span>
                   </td>
                   <td className="px-4 py-2">
                     <span className={`px-2 py-0.5 rounded text-xs font-medium ${
-                      emp.status === 'Chính thức' ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400' :
+                      emp.status === 'Chính thức' ? 'bg-green-100 text-green-700 dark:bg-blue-900/40 dark:text-blue-400' :
                       emp.status === 'Thử việc' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-400' :
                       'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-400'
                     }`}>{emp.status}</span>
@@ -164,8 +164,8 @@ export default function EmployeesPage() {
 
         {/* Form Modal */}
         {showForm && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
-            <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl p-6 w-full max-w-md border border-gray-200 dark:border-slate-700">
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center animate-backdropIn">
+            <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl p-6 w-full max-w-md border border-slate-200 dark:border-slate-700 animate-modalIn">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="font-bold text-lg text-gray-900 dark:text-slate-100">{editing ? 'Sửa nhân viên' : 'Thêm nhân viên mới'}</h2>
                 <button type="button" onClick={() => setShowForm(false)} className="p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg text-gray-500 dark:text-slate-400 transition-colors cursor-pointer"><X size={20} /></button>
@@ -174,40 +174,40 @@ export default function EmployeesPage() {
                 <div>
                   <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-slate-300">Mã nhân viên</label>
                   <input required value={form.employee_id} onChange={(e) => setForm({ ...form, employee_id: e.target.value })} disabled={!!editing}
-                    className="w-full border border-gray-300 dark:border-slate-600 rounded px-3 py-2 text-sm bg-white dark:bg-slate-700 dark:text-slate-100 disabled:bg-gray-100 dark:disabled:bg-slate-600" />
+                    className="w-full border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-slate-700 dark:text-slate-100 disabled:bg-gray-100 dark:disabled:bg-slate-600" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-slate-300">Họ và tên</label>
                   <input required value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })}
-                    className="w-full border border-gray-300 dark:border-slate-600 rounded px-3 py-2 text-sm bg-white dark:bg-slate-700 dark:text-slate-100" />
+                    className="w-full border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-slate-700 dark:text-slate-100" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-slate-300">Phòng ban</label>
                   <select value={form.department} onChange={(e) => setForm({ ...form, department: e.target.value })}
-                    className="w-full border border-gray-300 dark:border-slate-600 rounded px-3 py-2 text-sm bg-white dark:bg-slate-700 dark:text-slate-100">
+                    className="w-full border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-slate-700 dark:text-slate-100">
                     {DEPARTMENTS.map((d) => <option key={d} value={d}>{d}</option>)}
                   </select>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-slate-300">Level</label>
                   <select value={form.level} onChange={(e) => setForm({ ...form, level: e.target.value })}
-                    className="w-full border border-gray-300 dark:border-slate-600 rounded px-3 py-2 text-sm bg-white dark:bg-slate-700 dark:text-slate-100">
+                    className="w-full border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-slate-700 dark:text-slate-100">
                     {LEVELS.map((l) => <option key={l} value={l}>{l}</option>)}
                   </select>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-slate-300">Trạng thái</label>
                   <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}
-                    className="w-full border border-gray-300 dark:border-slate-600 rounded px-3 py-2 text-sm bg-white dark:bg-slate-700 dark:text-slate-100">
+                    className="w-full border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-slate-700 dark:text-slate-100">
                     {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
                   </select>
                 </div>
               </div>
               <div className="flex gap-2 mt-4">
-                <button type="submit" className="flex-1 bg-green-600 text-white py-2 rounded-lg text-sm hover:bg-green-700 transition-colors cursor-pointer">
+                <button type="submit" className="flex-1 bg-blue-600 text-white py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors cursor-pointer">
                   {editing ? 'Cập nhật' : 'Thêm mới'}
                 </button>
-                <button type="button" onClick={() => setShowForm(false)} className="flex-1 border border-gray-300 dark:border-slate-600 py-2 rounded-lg text-sm hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-700 dark:text-slate-300 transition-colors cursor-pointer">
+                <button type="button" onClick={() => setShowForm(false)} className="flex-1 border border-slate-300 dark:border-slate-600 py-2 rounded-lg text-sm hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-700 dark:text-slate-300 transition-colors cursor-pointer">
                   Hủy
                 </button>
               </div>

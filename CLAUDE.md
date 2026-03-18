@@ -154,23 +154,95 @@ Xây dựng dựa trên dữ liệu từ file Excel `IBS_Resource Plan_2026.xlsx
   - Dashboard: loading spinner thay text, responsive grid (KPI 2/3/5 cols, charts 1/2/4 cols)
   - Form modals: gradient header, improved close button
 
+### 2026-03-17 - Sửa biểu đồ dashboard, cập nhật thống kê <60%
+- **Biểu đồ Pie Chart**: bỏ inline label (bị cắt chữ, chồng chéo), chuyển sang Legend phía dưới biểu đồ
+  - Tăng chiều cao biểu đồ từ 220px lên 280px cho tất cả charts
+  - Tooltip hiển thị "X người" thay vì chỉ số
+  - Legend horizontal với icon circle, font 11px
+- **Biểu đồ Bar Chart**: giảm width YAxis label, tăng chiều cao
+- **Thống kê <60%**: chỉ đếm từ ngày hôm nay trở đi (không tính tuần quá khứ)
+
+### 2026-03-17 - Dashboard redesign: bộ lọc đa tiêu chí + bảng màu Professional Blue
+- **Dashboard multi-filter**:
+  - Thêm 7 bộ lọc trên dashboard: Từ tuần, Đến tuần (date picker), Phòng ban, Loại nhân sự, Trạng thái dự án, Quản trị dự án, Tên dự án (multi-select)
+  - Backend `GET /api/dashboard/filter-options`: trả danh sách giá trị cho tất cả dropdown
+  - Backend `parse_multi()` helper: tách chuỗi comma-separated thành list filter values
+  - `/summary` và `/resource-table` hỗ trợ params: `department`, `level`, `project_status`, `pm`, `project_name` (comma-separated multi-value)
+  - Join bảng `Project` trong query weekly_util để lọc theo tiêu chí dự án
+- **MultiSelect component** (`frontend/src/components/MultiSelect.tsx`):
+  - Dropdown checkbox multi-choice, click outside to close
+  - Hiển thị "Tất cả" khi chưa chọn, tên item khi chọn 1, "X đã chọn" khi chọn nhiều
+  - Nút X xóa tất cả selection
+- **PageHeader component** (`frontend/src/components/PageHeader.tsx`): header đơn giản (title + children slot)
+- **Bảng màu Professional Blue** (thay thế xanh lá/teal):
+  - Primary: #2563EB (blue-600), Secondary: #3B82F6 (blue-500)
+  - Success: #22C55E (green-500), Warning: #F59E0B (amber-500), Error: #EF4444 (red-500)
+  - Sidebar: bg-white/dark:bg-slate-800, active nav: blue-50/blue-700 (dark: blue-900/30/blue-400)
+  - Login: blue-600 logo, button, focus rings
+  - Heatmap: blue-600 (100%), blue-400 (80%), amber-400 (60%), orange-400 (40%), rose-400 (20%)
+  - Charts COLORS: ['#2563eb', '#f59e0b', '#10b981', '#8b5cf6', '#ef4444', '#06b6d4', '#ec4899', '#6366f1']
+  - StatCard: left-4 border accent (emerald/rose/amber/blue) + colored value text
+  - Tất cả action buttons trên mọi trang: blue-600
+- **UI cải thiện**:
+  - Sidebar theo theme sáng/tối (không luôn tối), collapse/expand, user info + logout ở dưới
+  - PieChart legend ở bên phải (side-legend), không bị cắt chữ
+  - Filter bar trong white rounded card phía trên nội dung dashboard
+  - KPI cards → Charts row → Resource table layout
+
+### 2026-03-18 - Bảng phân bổ inline dropdown, màu xanh lá dịu, table header fix
+- **ResourceTable inline dropdown** (giống ảnh mẫu):
+  - Click tên nhân viên mở dropdown hiển thị từng dự án với % theo tuần (cùng cột với bảng chính)
+  - Nhóm nhân viên theo phòng ban (department grouping header)
+  - Dashboard chỉ xem (view-only), không có nút phân bổ, không có link "Điều chỉnh"
+  - Legend màu hiển thị bên cạnh tiêu đề bảng
+  - Phân trang (10 nhân viên/trang) với nút điều hướng ở đầu bảng
+  - Sub-row dự án dùng cùng bảng màu heatmap (mỗi % khác màu)
+  - Chevron xoay mượt 90° khi expand/collapse
+  - Fade animation khi chuyển trang, slide animation khi expand sub-rows
+- **Dashboard redesign**:
+  - StatCard thêm icon (Users, FolderOpen, TrendingUp, AlertTriangle, UserMinus)
+  - Bỏ "Phân bổ nguồn lực tuần hiện tại" (utilization bar) và "Xem đầy đủ" link
+  - Charts xếp 2x2 compact hơn
+- **Bảng màu xanh lá dịu** (thay thế xanh dương chói):
+  - 100%: emerald-400 text-white (xanh lá đậm, dịu mắt)
+  - 80-99%: emerald-300 text-emerald-900
+  - 60-79%: emerald-200 text-emerald-800
+  - 40-59%: amber-200 text-amber-800
+  - <40%: rose-200 text-rose-800
+  - Sub-row (dự án): emerald-100 text-emerald-700
+- **Table header fix**: employees + projects page đổi từ bg-green-700 sang bg-slate-100/dark:bg-slate-700
+- **EmployeeDetailModal**: bỏ gradient header xanh lá, dùng bg-slate-50
+- **Sidebar**: "Bảng phân bổ" đổi thành "Phân bổ Nhân Lực", nút giao diện sáng/tối chuyển lên trên navigation
+- **Trang Phân bổ Nhân Lực** (resource-table): title đổi thành "Phân bổ Nhân Lực", admin CRUD phân bổ
+- **Smooth transitions toàn bộ**:
+  - Page content fade-in animation khi chuyển trang
+  - Bảng phân bổ: fade khi chuyển page, slideDown khi expand sub-rows, chevron xoay mượt
+  - Button press effect (scale 0.97), smooth hover trên tất cả buttons/links
+  - Smooth scroll behavior
+  - `transition-all duration-150` trên pagination buttons
+- **Bỏ hover row** trên heatmap table (trước đây hover làm mờ màu cell)
+
 ## Cấu trúc file quan trọng
 - `backend/app/main.py` - Entry point FastAPI
 - `backend/app/auth.py` - JWT auth logic (hash, verify, token, dependencies)
 - `backend/app/models/` - Database models (Employee, Project, ResourceAllocation, User)
 - `backend/app/api/auth.py` - Auth API routes (login, register, me, seed-admin)
-- `backend/app/api/dashboard.py` - Logic tính toán dashboard
+- `backend/app/api/dashboard.py` - Logic tính toán dashboard + filter-options endpoint + multi-filter support
 - `backend/app/api/import_excel.py` - Logic import Excel
 - `backend/app/api/allocations.py` - Allocations CRUD + overload API
 - `backend/app/api/chat.py` - Groq API proxy endpoint (3 model fallback)
-- `frontend/src/app/page.tsx` - Dashboard page
-- `frontend/src/app/login/page.tsx` - Trang đăng nhập
-- `frontend/src/lib/api.ts` - API client (axios + auth interceptor)
+- `frontend/src/app/page.tsx` - Dashboard page (7 bộ lọc, KPI, charts, resource table)
+- `frontend/src/app/login/page.tsx` - Trang đăng nhập (blue-600 theme)
+- `frontend/src/lib/api.ts` - API client (axios + auth interceptor + FilterOptions)
 - `frontend/src/lib/auth.tsx` - AuthProvider context
 - `frontend/src/lib/theme.tsx` - ThemeProvider context (dark/light mode)
 - `frontend/src/app/providers.tsx` - Wraps ThemeProvider + AuthProvider
 - `frontend/src/components/Sidebar.tsx` - Sidebar với user info, logout, theme toggle, collapse
-- `frontend/src/components/ResourceTable.tsx` - Bảng phân bổ heatmap
+- `frontend/src/components/PageHeader.tsx` - Page header component (title + children)
+- `frontend/src/components/MultiSelect.tsx` - Dropdown multi-choice filter component
+- `frontend/src/components/StatCard.tsx` - KPI card với left-border accent color
+- `frontend/src/components/DashboardCharts.tsx` - PieChart (side-legend), BarChart, LineChart (blue theme)
+- `frontend/src/components/ResourceTable.tsx` - Bảng phân bổ heatmap (green heatmap, inline dropdown, dept grouping)
 - `frontend/src/components/OverloadWarning.tsx` - Cảnh báo nhân viên quá tải
 - `frontend/src/components/Chatbot.tsx` - AI Chatbot (gọi qua backend proxy)
 - `frontend/src/components/AllocationFormModal.tsx` - Form phân bổ nhân viên vào dự án
@@ -183,7 +255,7 @@ Xây dựng dựa trên dữ liệu từ file Excel `IBS_Resource Plan_2026.xlsx
 - Các tuần tính từ ngày Monday của mỗi tuần
 - Phân bổ hỗ trợ bất kỳ khoảng thời gian nào (không giới hạn bởi Excel)
 - Frontend giao tiếp với backend qua REST API (port 8000)
-- Mã màu heatmap: xanh (>=100%), xanh nhạt (80-99%), vàng (60-79%), cam (40-59%), đỏ (<40%)
+- Mã màu heatmap: emerald-400 (>=100%), emerald-300 (80-99%), emerald-200 (60-79%), amber-200 (40-59%), rose-200 (<40%)
 - Sheet name Vietnamese trong Excel cần normalize Unicode (NFC) trước khi so sánh
 - Docker COPY không hỗ trợ shell redirects - cần đảm bảo source path tồn tại
 - Default accounts: admin/admin123 (admin role), employee/employee123 (employee role)

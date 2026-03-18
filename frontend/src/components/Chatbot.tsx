@@ -192,7 +192,7 @@ ${context}`,
       {!open && (
         <button
           onClick={() => setOpen(true)}
-          className="fixed bottom-6 right-6 w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg flex items-center justify-center z-50 transition-all duration-200 hover:scale-110 cursor-pointer"
+          className="fixed bottom-6 right-6 w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg flex items-center justify-center z-50 transition-all duration-200 hover:scale-105 hover:shadow-xl cursor-pointer animate-popIn"
         >
           <MessageCircle size={24} />
         </button>
@@ -200,9 +200,9 @@ ${context}`,
 
       {/* Chat window */}
       {open && (
-        <div className="fixed bottom-6 right-6 w-96 h-[500px] bg-white dark:bg-slate-800 rounded-xl shadow-2xl border border-gray-200 dark:border-slate-700 flex flex-col z-50">
+        <div className="fixed bottom-6 right-6 w-96 h-[500px] bg-white dark:bg-slate-800 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-700 flex flex-col z-50 animate-chatOpen">
           {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-slate-700 bg-green-600 rounded-t-xl">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-slate-700 bg-blue-600 rounded-t-xl">
             <div className="flex items-center gap-2 text-white">
               <Bot size={20} />
               <span className="font-medium text-sm">Trợ lý IBS</span>
@@ -226,13 +226,13 @@ ${context}`,
             {messages.map((msg, i) => (
               <div key={i} className={`flex gap-2 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                 {msg.role === 'assistant' && (
-                  <div className="w-6 h-6 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                    <Bot size={14} className="text-green-700 dark:text-green-400" />
+                  <div className="w-6 h-6 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <Bot size={14} className="text-blue-700 dark:text-blue-400" />
                   </div>
                 )}
                 <div className={`max-w-[80%] rounded-lg px-3 py-2 text-sm whitespace-pre-wrap ${
                   msg.role === 'user'
-                    ? 'bg-green-600 text-white'
+                    ? 'bg-blue-600 text-white'
                     : 'bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-slate-200'
                 }`}>
                   {msg.content}
@@ -246,8 +246,8 @@ ${context}`,
             ))}
             {loading && (
               <div className="flex gap-2">
-                <div className="w-6 h-6 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center flex-shrink-0">
-                  <Bot size={14} className="text-green-700 dark:text-green-400" />
+                <div className="w-6 h-6 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center flex-shrink-0">
+                  <Bot size={14} className="text-blue-700 dark:text-blue-400" />
                 </div>
                 <div className="bg-gray-100 dark:bg-slate-700 rounded-lg px-3 py-2 text-sm text-gray-500 dark:text-slate-400">
                   <span className="inline-flex gap-1">
@@ -270,12 +270,12 @@ ${context}`,
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Hỏi gì đó về nhân sự..."
-                className="flex-1 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-slate-700 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="flex-1 border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-slate-700 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
               />
               <button
                 type="submit"
                 disabled={loading || !input.trim()}
-                className="bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors cursor-pointer"
+                className="bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors cursor-pointer"
               >
                 <Send size={16} />
               </button>

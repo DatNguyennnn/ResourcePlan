@@ -84,6 +84,17 @@ export interface OverloadEntry {
   projects: { name: string; percentage: number }[];
 }
 
+export interface FilterOptions {
+  departments: string[];
+  levels: string[];
+  project_statuses: string[];
+  pms: string[];
+  project_names: string[];
+}
+
+export const fetchFilterOptions = () =>
+  api.get<FilterOptions>('/api/dashboard/filter-options').then((r) => r.data);
+
 export const fetchDashboard = (params?: Record<string, string>) =>
   api.get<DashboardSummary>('/api/dashboard/summary', { params }).then((r) => r.data);
 

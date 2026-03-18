@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
+import PageHeader from '@/components/PageHeader';
 import Chatbot from '@/components/Chatbot';
 import { importExcel } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
@@ -39,10 +40,10 @@ export default function ImportPage() {
   if (!user) return null;
 
   return (
-    <div className="flex bg-gray-50 dark:bg-slate-900 min-h-screen">
+    <div className="flex bg-slate-50 dark:bg-slate-900 min-h-screen">
       <Sidebar />
       <main className="flex-1 p-6">
-        <h1 className="text-xl font-bold mb-6 text-gray-900 dark:text-slate-100">Nhập dữ liệu từ Excel</h1>
+        <PageHeader title="Nhập dữ liệu" />
 
         <div className="max-w-xl">
           <div className="bg-white dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-slate-700 p-6">
@@ -62,26 +63,26 @@ export default function ImportPage() {
                   className="block mx-auto text-sm text-gray-700 dark:text-slate-300"
                 />
                 {file && (
-                  <p className="text-sm text-green-600 dark:text-green-400 mt-2">Đã chọn: {file.name}</p>
+                  <p className="text-sm text-blue-600 dark:text-blue-400 mt-2">Đã chọn: {file.name}</p>
                 )}
               </div>
 
               <button
                 type="submit"
                 disabled={!file || loading}
-                className="w-full bg-green-600 text-white py-2 rounded-lg text-sm hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                className="w-full bg-blue-600 text-white py-2 rounded-lg text-sm hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
               >
                 {loading ? 'Đang nhập...' : 'Nhập dữ liệu'}
               </button>
             </form>
 
             {result && (
-              <div className="mt-4 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-lg p-4">
-                <div className="flex items-center gap-2 text-green-700 dark:text-green-400 font-medium mb-2">
+              <div className="mt-4 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                <div className="flex items-center gap-2 text-green-700 dark:text-blue-400 font-medium mb-2">
                   <CheckCircle size={18} />
                   {result.message}
                 </div>
-                <ul className="text-sm text-green-600 dark:text-green-400 space-y-1">
+                <ul className="text-sm text-blue-600 dark:text-blue-400 space-y-1">
                   <li>Nhân viên: {result.stats.employees} bản ghi</li>
                   <li>Dự án: {result.stats.projects} bản ghi</li>
                   <li>Phân bổ: {result.stats.allocations} bản ghi</li>

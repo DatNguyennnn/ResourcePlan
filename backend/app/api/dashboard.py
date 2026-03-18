@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import func, case, and_
 from datetime import date, timedelta
+from typing import List
 from app.database import get_db
 from app.models.employee import Employee
 from app.models.project import Project
@@ -10,24 +11,64 @@ from app.models.resource_allocation import ResourceAllocation
 router = APIRouter(prefix="/api/dashboard", tags=["dashboard"])
 
 
+def parse_multi(value: str | None) -> list[str]:
+    """Parse comma-separated filter value into list."""
+    if not value:
+        return []
+    return [v.strip() for v in value.split(",") if v.strip()]
+
+
+@router.get("/filter-options")
+def get_filter_options(db: Session = Depends(get_db)):
+    """Get available values for all filter dropdowns."""
+    departments = [r[0] for r in db.query(Employee.department).distinct().order_by(Employee.department).all() if r[0]]
+    levels = [r[0] for r in db.query(Employee.level).distinct().order_by(Employee.level).all() if r[0]]
+    project_statuses = [r[0] for r in db.query(Project.status).distinct().order_by(Project.status).all() if r[0]]
+    pms = [r[0] for r in db.query(Project.pm).distinct().order_by(Project.pm).all() if r[0]]
+    project_names = [r[0] for r in db.query(Project.project_name).distinct().order_by(Project.project_name).all() if r[0]]
+
+    return {
+        "departments": departments,
+        "levels": levels,
+        "project_statuses": project_statuses,
+        "pms": pms,
+        "project_names": project_names,
+    }
+
+
 @router.get("/summary")
 def get_dashboard_summary(
     week_from: date | None = None,
     week_to: date | None = None,
     department: str | None = None,
+    level: str | None = None,
     project_status: str | None = None,
+    pm: str | None = None,
+    project_name: str | None = None,
     db: Session = Depends(get_db),
 ):
+    departments = parse_multi(department)
+    levels = parse_multi(level)
+    project_statuses = parse_multi(project_status)
+    pms = parse_multi(pm)
+    project_names = parse_multi(project_name)
+
     # Total employees
     emp_query = db.query(Employee)
-    if department:
-        emp_query = emp_query.filter(Employee.department == department)
+    if departments:
+        emp_query = emp_query.filter(Employee.department.in_(departments))
+    if levels:
+        emp_query = emp_query.filter(Employee.level.in_(levels))
     total_employees = emp_query.count()
 
     # Active projects (not Đóng)
     proj_query = db.query(Project).filter(Project.status != "Đóng")
-    if project_status:
-        proj_query = db.query(Project).filter(Project.status == project_status)
+    if project_statuses:
+        proj_query = db.query(Project).filter(Project.status.in_(project_statuses))
+    if pms:
+        proj_query = proj_query.filter(Project.pm.in_(pms))
+    if project_names:
+        proj_query = proj_query.filter(Project.project_name.in_(project_names))
     active_projects = proj_query.count()
 
     # Employee level distribution
@@ -35,34 +76,46 @@ def get_dashboard_summary(
         db.query(Employee.level, func.count(Employee.id))
         .group_by(Employee.level)
     )
-    if department:
-        level_dist = level_dist.filter(Employee.department == department)
+    if departments:
+        level_dist = level_dist.filter(Employee.department.in_(departments))
+    if levels:
+        level_dist = level_dist.filter(Employee.level.in_(levels))
     level_distribution = {row[0]: row[1] for row in level_dist.all()}
 
     # Department distribution
     dept_dist = (
         db.query(Employee.department, func.count(Employee.id))
         .group_by(Employee.department)
-        .all()
     )
-    department_distribution = {row[0]: row[1] for row in dept_dist}
+    if departments:
+        dept_dist = dept_dist.filter(Employee.department.in_(departments))
+    if levels:
+        dept_dist = dept_dist.filter(Employee.level.in_(levels))
+    department_distribution = {row[0]: row[1] for row in dept_dist.all()}
 
     # Employee status distribution
     status_dist = (
         db.query(Employee.status, func.count(Employee.id))
         .group_by(Employee.status)
     )
-    if department:
-        status_dist = status_dist.filter(Employee.department == department)
+    if departments:
+        status_dist = status_dist.filter(Employee.department.in_(departments))
+    if levels:
+        status_dist = status_dist.filter(Employee.level.in_(levels))
     employee_status_distribution = {row[0]: row[1] for row in status_dist.all()}
 
     # Project status distribution
     proj_status_dist = (
         db.query(Project.status, func.count(Project.id))
         .group_by(Project.status)
-        .all()
     )
-    project_status_distribution = {row[0]: row[1] for row in proj_status_dist}
+    if project_statuses:
+        proj_status_dist = proj_status_dist.filter(Project.status.in_(project_statuses))
+    if pms:
+        proj_status_dist = proj_status_dist.filter(Project.pm.in_(pms))
+    if project_names:
+        proj_status_dist = proj_status_dist.filter(Project.project_name.in_(project_names))
+    project_status_distribution = {row[0]: row[1] for row in proj_status_dist.all()}
 
     # Weekly utilization data
     if not week_from:
@@ -78,11 +131,20 @@ def get_dashboard_summary(
             func.sum(ResourceAllocation.allocation_percentage).label("total_alloc"),
         )
         .join(Employee, ResourceAllocation.employee_id == Employee.id)
+        .join(Project, ResourceAllocation.project_id == Project.id)
         .filter(ResourceAllocation.week_start >= week_from)
         .filter(ResourceAllocation.week_start <= week_to)
     )
-    if department:
-        weekly_util = weekly_util.filter(Employee.department == department)
+    if departments:
+        weekly_util = weekly_util.filter(Employee.department.in_(departments))
+    if levels:
+        weekly_util = weekly_util.filter(Employee.level.in_(levels))
+    if project_statuses:
+        weekly_util = weekly_util.filter(Project.status.in_(project_statuses))
+    if pms:
+        weekly_util = weekly_util.filter(Project.pm.in_(pms))
+    if project_names:
+        weekly_util = weekly_util.filter(Project.project_name.in_(project_names))
     weekly_util = weekly_util.group_by(
         ResourceAllocation.week_start, Employee.full_name, Employee.department
     ).all()
@@ -114,8 +176,6 @@ def get_dashboard_summary(
         })
 
     # Overload / underload stats
-    # >100%: count across all weeks in range
-    # <60%: only count from today forward (current + future weeks)
     today = date.today()
     over_100_employees = set()
     under_60_employees = set()
@@ -153,11 +213,20 @@ def get_resource_table(
     week_from: date | None = None,
     week_to: date | None = None,
     department: str | None = None,
+    level: str | None = None,
     project_status: str | None = None,
+    pm: str | None = None,
+    project_name: str | None = None,
     employee_name: str | None = None,
     db: Session = Depends(get_db),
 ):
     """Returns the resource allocation table (employee x week with total allocation)."""
+    departments = parse_multi(department)
+    levels = parse_multi(level)
+    project_statuses = parse_multi(project_status)
+    pms = parse_multi(pm)
+    project_names = parse_multi(project_name)
+
     if not week_from:
         week_from = date(date.today().year, 1, 1)
     if not week_to:
@@ -176,10 +245,16 @@ def get_resource_table(
         .filter(ResourceAllocation.week_start >= week_from)
         .filter(ResourceAllocation.week_start <= week_to)
     )
-    if department:
-        query = query.filter(Employee.department == department)
-    if project_status:
-        query = query.filter(Project.status == project_status)
+    if departments:
+        query = query.filter(Employee.department.in_(departments))
+    if levels:
+        query = query.filter(Employee.level.in_(levels))
+    if project_statuses:
+        query = query.filter(Project.status.in_(project_statuses))
+    if pms:
+        query = query.filter(Project.pm.in_(pms))
+    if project_names:
+        query = query.filter(Project.project_name.in_(project_names))
     if employee_name:
         query = query.filter(Employee.full_name.ilike(f"%{employee_name}%"))
 

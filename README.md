@@ -22,11 +22,16 @@ Hệ thống quản lý phân bổ nguồn lực nhân sự dự án cho Trung t
 ### Tổng quan (Dashboard)
 - Tổng quan số lượng nhân sự, dự án đang thực hiện
 - Tỷ lệ tham gia dự án (%)
-- Cảnh báo nhân sự quá tải (>100%) và chưa đủ việc (<60%)
-- Biểu đồ phân bổ nhân sự theo phòng ban, level
-- Biểu đồ trạng thái dự án
-- Biểu đồ xu hướng tỷ lệ tham gia theo tuần
+- Cảnh báo nhân sự quá tải (>100%) và chưa đủ việc (<60%, chỉ tính từ hôm nay trở đi)
+- **7 bộ lọc đa tiêu chí**: Từ tuần, Đến tuần (date picker), Phòng ban, Loại nhân sự, Trạng thái dự án, Quản trị dự án, Tên dự án (multi-select)
+- Biểu đồ phân bổ nhân sự theo phòng ban, level (Pie Chart với side-legend)
+- Biểu đồ trạng thái dự án (Bar Chart ngang)
+- Biểu đồ xu hướng tỷ lệ tham gia theo tuần (Line Chart)
 - Banner cảnh báo overload (nhân viên >100% phân bổ)
+- Bảng phân bổ nguồn lực (heatmap) tích hợp ngay trên dashboard
+- **Click tên nhân viên** để xem dropdown chi tiết % từng dự án theo tuần
+- Nhóm nhân viên theo phòng ban, đánh dấu tuần hiện tại
+- Bảng màu xanh lá dịu (Soft Green) - dễ nhìn, không chói
 - Responsive grid: tự động điều chỉnh theo kích thước màn hình
 
 ### Quản lý Nhân sự (CRUD - Admin only)
@@ -44,7 +49,7 @@ Hệ thống quản lý phân bổ nguồn lực nhân sự dự án cho Trung t
 - Click vào nhân viên để xem chi tiết phân bổ theo từng dự án
 - Lọc theo phòng ban, tìm kiếm nhân viên
 - Bộ chọn ngày (date picker) để lọc bảng theo khoảng thời gian bất kỳ
-- Mã màu theo mức độ phân bổ (xanh 100%, vàng 60-79%, cam 40-59%, đỏ <40%)
+- Mã màu theo mức độ phân bổ (xanh lá đậm 100%, xanh lá nhạt 60-79%, vàng nhạt 40-59%, hồng nhạt <40%)
 - Chỉ hiển thị tuần có phân bổ thực tế (ẩn tuần trống)
 
 ### Phân bổ nhân viên vào dự án (Admin)

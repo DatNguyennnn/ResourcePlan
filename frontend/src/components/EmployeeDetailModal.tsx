@@ -134,10 +134,10 @@ export default function EmployeeDetailModal({ employeeId, onClose, onDataChanged
   if (!employeeId) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-5xl max-h-[80vh] overflow-hidden flex flex-col border border-gray-200 dark:border-slate-700">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-backdropIn">
+      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-5xl max-h-[80vh] overflow-hidden flex flex-col border border-slate-200 dark:border-slate-700 animate-modalIn">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-slate-700 bg-gradient-to-r from-green-50 to-white dark:from-slate-800 dark:to-slate-800">
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
           <div>
             <h2 className="font-bold text-lg text-gray-900 dark:text-slate-100">
               {data?.employee.name || 'Đang tải...'}
@@ -161,9 +161,9 @@ export default function EmployeeDetailModal({ employeeId, onClose, onDataChanged
 
         {/* Success banner */}
         {successMsg && (
-          <div className="mx-4 mt-3 bg-green-50 dark:bg-green-900/30 border border-green-300 dark:border-green-700 rounded-lg p-3 flex items-center gap-2">
-            <Check size={16} className="text-green-600 dark:text-green-400" />
-            <span className="text-sm text-green-800 dark:text-green-300">{successMsg}</span>
+          <div className="mx-4 mt-3 bg-blue-50 dark:bg-blue-900/30 border border-blue-300 dark:border-blue-700 rounded-lg p-3 flex items-center gap-2">
+            <Check size={16} className="text-blue-600 dark:text-blue-400" />
+            <span className="text-sm text-blue-800 dark:text-blue-300">{successMsg}</span>
           </div>
         )}
 
@@ -182,7 +182,7 @@ export default function EmployeeDetailModal({ employeeId, onClose, onDataChanged
         <div className="flex-1 overflow-auto p-4">
           {loading ? (
             <div className="flex items-center justify-center h-32">
-              <div className="w-8 h-8 border-4 border-green-500 border-t-transparent rounded-full animate-spin"></div>
+              <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
             </div>
           ) : data && data.projects.length > 0 ? (
             <table className="min-w-full text-sm">
@@ -227,7 +227,7 @@ export default function EmployeeDetailModal({ employeeId, onClose, onDataChanged
                                 <button
                                   onClick={handleSave}
                                   disabled={saving}
-                                  className="p-0.5 bg-green-500 text-white rounded hover:bg-green-600 transition-colors cursor-pointer"
+                                  className="p-0.5 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors cursor-pointer"
                                   title="Lưu (Enter)"
                                 >
                                   <Check size={10} />

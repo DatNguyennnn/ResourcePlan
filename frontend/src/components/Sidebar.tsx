@@ -10,7 +10,7 @@ const navItems = [
   { href: '/', label: 'Tổng quan', icon: LayoutDashboard },
   { href: '/employees', label: 'Nhân sự', icon: Users },
   { href: '/projects', label: 'Dự án', icon: FolderKanban },
-  { href: '/resource-table', label: 'Bảng phân bổ', icon: Table2 },
+  { href: '/resource-table', label: 'Phân bổ Nhân Lực', icon: Table2 },
   { href: '/import', label: 'Nhập dữ liệu', icon: Upload },
 ];
 
@@ -27,37 +27,37 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className={`${collapsed ? 'w-[68px]' : 'w-64'} bg-white dark:bg-slate-800 border-r border-gray-200 dark:border-slate-700 min-h-screen flex flex-col transition-all duration-300`}>
-      {/* Header with logo + collapse toggle */}
-      <div className="p-3 border-b border-gray-200 dark:border-slate-700">
+    <aside className={`${collapsed ? 'w-[68px]' : 'w-60'} bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 min-h-screen flex flex-col transition-all duration-300`}>
+      {/* Header */}
+      <div className="p-3 border-b border-slate-200 dark:border-slate-700">
         {collapsed ? (
           <div className="flex flex-col items-center gap-2">
-            <div className="w-9 h-9 bg-green-600 rounded-lg flex items-center justify-center">
+            <div className="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">IBS</span>
             </div>
             <button
               onClick={() => setCollapsed(false)}
               aria-label="Mở rộng sidebar"
-              className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 dark:text-slate-500 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-slate-700 dark:hover:text-slate-300 transition-colors duration-200 cursor-pointer"
+              className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-300 transition-colors duration-200 cursor-pointer"
             >
               <PanelLeftOpen size={18} />
             </button>
           </div>
         ) : (
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 min-w-0">
-              <div className="w-9 h-9 bg-green-600 rounded-lg flex items-center justify-center flex-shrink-0">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
                 <span className="text-white font-bold text-sm">IBS</span>
               </div>
               <div className="min-w-0">
-                <h1 className="font-bold text-sm text-gray-900 dark:text-slate-100 truncate">iERP Services JSC</h1>
-                <p className="text-xs text-gray-500 dark:text-slate-400">Quản lý Nguồn lực</p>
+                <h1 className="font-bold text-sm text-slate-900 dark:text-slate-100 truncate">iERP Services JSC</h1>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Quản lý Nguồn lực</p>
               </div>
             </div>
             <button
               onClick={() => setCollapsed(true)}
               aria-label="Thu gọn sidebar"
-              className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 dark:text-slate-500 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-slate-700 dark:hover:text-slate-300 transition-colors duration-200 cursor-pointer flex-shrink-0"
+              className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-300 transition-colors duration-200 cursor-pointer flex-shrink-0"
             >
               <PanelLeftClose size={18} />
             </button>
@@ -66,15 +66,11 @@ export default function Sidebar() {
       </div>
 
       {/* Theme toggle */}
-      <div className="px-3 py-2 border-b border-gray-200 dark:border-slate-700">
+      <div className="px-2 pt-2">
         <button
           onClick={toggle}
-          title={dark ? 'Chuyển sang giao diện sáng' : 'Chuyển sang giao diện tối'}
-          className={`flex items-center ${collapsed ? 'justify-center' : 'gap-2'} px-3 py-2.5 rounded-lg text-sm font-medium w-full transition-all duration-200 cursor-pointer ${
-            dark
-              ? 'bg-amber-500/10 text-amber-400 hover:bg-amber-500/20'
-              : 'bg-indigo-50 text-indigo-600 hover:bg-indigo-100'
-          }`}
+          title={dark ? 'Giao diện sáng' : 'Giao diện tối'}
+          className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm w-full transition-all duration-200 cursor-pointer text-slate-500 hover:bg-slate-50 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-200`}
         >
           {dark ? <Sun size={18} /> : <Moon size={18} />}
           {!collapsed && (dark ? 'Giao diện sáng' : 'Giao diện tối')}
@@ -82,7 +78,7 @@ export default function Sidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-2">
+      <nav className="flex-1 p-2 mt-1">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
           return (
@@ -92,8 +88,8 @@ export default function Sidebar() {
               title={collapsed ? item.label : undefined}
               className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2.5 rounded-lg mb-1 text-sm transition-all duration-200 ${
                 isActive
-                  ? 'bg-green-50 text-green-700 font-medium dark:bg-green-900/30 dark:text-green-400 shadow-sm'
-                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-200'
+                  ? 'bg-blue-50 text-blue-700 font-semibold dark:bg-blue-900/30 dark:text-blue-400'
+                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-200'
               }`}
             >
               <item.icon size={18} />
@@ -103,11 +99,11 @@ export default function Sidebar() {
         })}
       </nav>
 
-      {/* User info + logout */}
-      <div className="px-3 py-3 border-t border-gray-200 dark:border-slate-700">
+      {/* Bottom */}
+      <div className="p-2 border-t border-slate-200 dark:border-slate-700">
         {user && (
           <>
-            <div className={`flex items-center ${collapsed ? 'justify-center' : 'gap-2'} mb-2`}>
+            <div className={`flex items-center ${collapsed ? 'justify-center' : 'gap-2'} px-3 py-2`}>
               {isAdmin ? (
                 <Shield size={16} className="text-amber-500 flex-shrink-0" />
               ) : (
@@ -115,8 +111,8 @@ export default function Sidebar() {
               )}
               {!collapsed && (
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 dark:text-slate-100 truncate">{user.full_name}</p>
-                  <p className="text-xs text-gray-500 dark:text-slate-400">
+                  <p className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate">{user.full_name}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
                     {isAdmin ? 'Quản trị viên' : 'Nhân viên'}
                   </p>
                 </div>
@@ -124,7 +120,7 @@ export default function Sidebar() {
             </div>
             <button
               onClick={handleLogout}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-red-500 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 transition-all duration-200 w-full cursor-pointer"
+              className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-sm text-rose-500 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-900/20 transition-all duration-200 w-full cursor-pointer`}
             >
               <LogOut size={18} />
               {!collapsed && 'Đăng xuất'}
