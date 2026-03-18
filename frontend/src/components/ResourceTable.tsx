@@ -60,10 +60,10 @@ export default function ResourceTable({ data, onEmployeeClick, editable = false,
       if (!monthMap.has(key)) monthMap.set(key, []);
       monthMap.get(key)!.push(w);
     }
-    for (const [key, weeks] of monthMap) {
+    Array.from(monthMap.entries()).forEach(([key, weeks]) => {
       const [year, month] = key.split('-').map(Number);
       groups.push({ month, year, label: `${MONTH_NAMES[month]} ${year}`, weeks });
-    }
+    });
     return groups;
   }, [data.weeks]);
 
