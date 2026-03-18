@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { X, AlertTriangle } from 'lucide-react';
 import { fetchEmployees, fetchProjects, fetchAllocations, bulkCreateAllocation, type Employee, type Project } from '@/lib/api';
+import SearchSelect from './SearchSelect';
 
 interface Props {
   open: boolean;
@@ -162,33 +163,23 @@ export default function AllocationFormModal({ open, onClose, onSuccess }: Props)
           {/* Employee Select */}
           <div>
             <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-slate-300">Nhân viên</label>
-            <select
+            <SearchSelect
+              options={employees.map(emp => ({ value: emp.id, label: `${emp.full_name} (${emp.department})` }))}
               value={employeeId}
-              onChange={(e) => setEmployeeId(e.target.value ? Number(e.target.value) : '')}
-              required
-              className="w-full border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-slate-700 dark:text-slate-100"
-            >
-              <option value="">-- Chọn nhân viên --</option>
-              {employees.map(emp => (
-                <option key={emp.id} value={emp.id}>{emp.full_name} ({emp.department})</option>
-              ))}
-            </select>
+              onChange={setEmployeeId}
+              placeholder="-- Tìm và chọn nhân viên --"
+            />
           </div>
 
           {/* Project Select */}
           <div>
             <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-slate-300">Dự án</label>
-            <select
+            <SearchSelect
+              options={projects.map(proj => ({ value: proj.id, label: `${proj.project_name} [${proj.project_code}]` }))}
               value={projectId}
-              onChange={(e) => setProjectId(e.target.value ? Number(e.target.value) : '')}
-              required
-              className="w-full border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-slate-700 dark:text-slate-100"
-            >
-              <option value="">-- Chọn dự án --</option>
-              {projects.map(proj => (
-                <option key={proj.id} value={proj.id}>{proj.project_name} [{proj.project_code}]</option>
-              ))}
-            </select>
+              onChange={setProjectId}
+              placeholder="-- Tìm và chọn dự án --"
+            />
           </div>
 
           {/* Percentage */}

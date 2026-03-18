@@ -125,15 +125,19 @@ def bulk_create_allocations(data: AllocationBulkCreate, db: Session = Depends(ge
             ResourceAllocation.week_start == week_date,
         ).first()
         if existing:
-            existing.allocation_percentage = pct
+            if pct <= 0:
+                db.delete(existing)
+            else:
+                existing.allocation_percentage = pct
         else:
-            alloc = ResourceAllocation(
-                employee_id=data.employee_id,
-                project_id=data.project_id,
-                week_start=week_date,
-                allocation_percentage=pct,
-            )
-            db.add(alloc)
+            if pct > 0:
+                alloc = ResourceAllocation(
+                    employee_id=data.employee_id,
+                    project_id=data.project_id,
+                    week_start=week_date,
+                    allocation_percentage=pct,
+                )
+                db.add(alloc)
         created += 1
     db.commit()
 
