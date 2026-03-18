@@ -8,7 +8,7 @@ import ConfirmDialog from '@/components/ConfirmDialog';
 import ToastContainer, { type ToastData } from '@/components/Toast';
 import { fetchEmployees, createEmployee, updateEmployee, deleteEmployee, type Employee } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
-import { Plus, Pencil, Trash2, Search, X } from 'lucide-react';
+import { Plus, Pencil, Trash2, Search, X, XCircle } from 'lucide-react';
 
 const LEVELS = ['Senior', 'Experienced', 'Assesed'];
 const STATUSES = ['Chính thức', 'Thử việc', 'Học việc'];
