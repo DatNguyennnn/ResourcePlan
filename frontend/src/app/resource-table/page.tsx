@@ -115,6 +115,7 @@ export default function ResourceTablePage() {
         ) : data ? (
           <>
             <div className="mb-3 flex gap-3 text-xs text-slate-500 dark:text-slate-400 flex-wrap">
+              <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded alloc-over inline-block"></span> &gt;100%</span>
               <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded alloc-100 inline-block"></span> 100%</span>
               <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded alloc-80 inline-block"></span> 80-99%</span>
               <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded alloc-60 inline-block"></span> 60-79%</span>

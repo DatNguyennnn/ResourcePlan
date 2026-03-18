@@ -6,6 +6,7 @@ import { fetchEmployeeDetail, bulkCreateAllocation } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 
 function getAllocClass(value: number): string {
+  if (value > 1.0) return 'alloc-over';
   if (value >= 1.0) return 'alloc-100';
   if (value >= 0.8) return 'alloc-80';
   if (value >= 0.6) return 'alloc-60';
@@ -15,6 +16,7 @@ function getAllocClass(value: number): string {
 }
 
 function getSubAllocClass(value: number): string {
+  if (value > 1.0) return 'alloc-sub-over';
   if (value >= 1.0) return 'alloc-sub-100';
   if (value >= 0.8) return 'alloc-sub-80';
   if (value >= 0.6) return 'alloc-sub-60';

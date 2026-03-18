@@ -158,6 +158,7 @@ export default function DashboardPage() {
               <div className="flex items-center justify-between mb-3">
                 <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-300">Bảng phân bổ nguồn lực</h2>
                 <div className="flex gap-3 text-xs text-slate-500 dark:text-slate-400">
+                  <span className="flex items-center gap-1"><span className="w-3 h-3 rounded alloc-over inline-block"></span> &gt;100%</span>
                   <span className="flex items-center gap-1"><span className="w-3 h-3 rounded alloc-100 inline-block"></span> 100%</span>
                   <span className="flex items-center gap-1"><span className="w-3 h-3 rounded alloc-80 inline-block"></span> 80-99%</span>
                   <span className="flex items-center gap-1"><span className="w-3 h-3 rounded alloc-60 inline-block"></span> 60-79%</span>

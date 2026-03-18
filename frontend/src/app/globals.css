@@ -46,6 +46,7 @@ select {
   @apply text-center text-xs font-semibold px-1 py-1.5 transition-all duration-150;
 }
 
+.alloc-over { @apply bg-red-500 text-white; }
 .alloc-100 { @apply bg-emerald-400 text-white; }
 .alloc-80 { @apply bg-emerald-300 text-emerald-900; }
 .alloc-60 { @apply bg-emerald-200 text-emerald-800; }
@@ -54,6 +55,7 @@ select {
 .alloc-0 { @apply bg-slate-100 text-slate-300 dark:bg-slate-800 dark:text-slate-600; }
 
 /* Sub-row (project detail) - lighter versions */
+.alloc-sub-over { @apply bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300; }
 .alloc-sub-100 { @apply bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300; }
 .alloc-sub-80 { @apply bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400; }
 .alloc-sub-60 { @apply bg-teal-50 text-teal-600 dark:bg-teal-900/20 dark:text-teal-400; }
