@@ -157,6 +157,13 @@ export default function ResourceTable({ data, onEmployeeClick, editable = false,
         }
       }
       setWeekOverrides(prev => ({ ...prev, [savedEmpId]: newTotals }));
+
+      // If employee has no allocations left, refresh full table to remove them
+      const hasAny = Object.values(newTotals).some(v => v > 0);
+      if (!hasAny) {
+        setExpandedIds(prev => { const next = new Set(prev); next.delete(savedEmpId); return next; });
+        onDataChanged?.();
+      }
     } catch {
       // ignore
     } finally {
