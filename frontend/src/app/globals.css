@@ -119,6 +119,12 @@ select {
 .animate-slideRight { animation: slideRight 0.25s ease-out; }
 .animate-slideLeft { animation: slideLeft 0.25s ease-out; }
 
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(100%); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.animate-toastIn { animation: toastIn 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
+
 /* ── Page Content Transitions ── */
 main {
   animation: fadeIn 0.3s ease-out;
