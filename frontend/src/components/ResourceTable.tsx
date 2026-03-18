@@ -46,6 +46,8 @@ export default function ResourceTable({ data, onEmployeeClick, editable = false,
   const [expandedIds, setExpandedIds] = useState<Set<number>>(new Set());
   const [details, setDetails] = useState<Record<number, EmployeeDetail>>({});
   const [loadingIds, setLoadingIds] = useState<Set<number>>(new Set());
+  // Local overrides for employee week totals (updated after inline edit without full reload)
+  const [weekOverrides, setWeekOverrides] = useState<Record<number, Record<string, number>>>({});
 
   // Inline edit state
   const [editingCell, setEditingCell] = useState<{ projectId: number; week: string } | null>(null);
@@ -142,6 +144,15 @@ export default function ResourceTable({ data, onEmployeeClick, editable = false,
       // Update detail data locally without full page reload
       const d = await fetchEmployeeDetail(savedEmpId);
       setDetails(prev => ({ ...prev, [savedEmpId]: d }));
+
+      // Recalculate employee total weeks from project details
+      const newTotals: Record<string, number> = {};
+      for (const proj of d.projects) {
+        for (const [w, v] of Object.entries(proj.weeks)) {
+          newTotals[w] = (newTotals[w] || 0) + v;
+        }
+      }
+      setWeekOverrides(prev => ({ ...prev, [savedEmpId]: newTotals }));
     } catch {
       // ignore
     } finally {
@@ -242,7 +253,7 @@ export default function ResourceTable({ data, onEmployeeClick, editable = false,
                           </span>
                         </td>
                         {visibleWeeks.map((w) => {
-                          const val = emp.weeks[w] ?? 0;
+                          const val = weekOverrides[emp.id]?.[w] ?? emp.weeks[w] ?? 0;
                           return (
                             <td key={w} className={`allocation-cell ${getAllocClass(val)}`}>
                               {val > 0 ? `${Math.round(val * 100)}%` : ''}
