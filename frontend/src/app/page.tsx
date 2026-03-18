@@ -13,23 +13,6 @@ import { useAuth } from '@/lib/auth';
 import { fetchDashboard, fetchResourceTable, fetchFilterOptions, seedAdmin, type DashboardSummary, type ResourceTableData, type FilterOptions } from '@/lib/api';
 import { RotateCcw, AlertCircle } from 'lucide-react';
 
-function padDate(d: Date): string {
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth() + 1).padStart(2, '0');
-  const dd = String(d.getDate()).padStart(2, '0');
-  return `${yyyy}-${mm}-${dd}`;
-}
-
-const DEFAULT_DATES = (() => {
-  const now = new Date();
-  const y = now.getFullYear();
-  const m = now.getMonth();
-  return {
-    from: padDate(new Date(y, m, 1)),
-    to: padDate(new Date(y, m + 3, 0)),
-  };
-})();
-
 export default function DashboardPage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
@@ -38,9 +21,8 @@ export default function DashboardPage() {
   const [filterOpts, setFilterOpts] = useState<FilterOptions | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const defaults = DEFAULT_DATES;
-  const [weekFrom, setWeekFrom] = useState(defaults.from);
-  const [weekTo, setWeekTo] = useState(defaults.to);
+  const [weekFrom, setWeekFrom] = useState('');
+  const [weekTo, setWeekTo] = useState('');
   const [departments, setDepartments] = useState<string[]>([]);
   const [levels, setLevels] = useState<string[]>([]);
   const [projectStatuses, setProjectStatuses] = useState<string[]>([]);
@@ -113,11 +95,11 @@ export default function DashboardPage() {
           <MultiSelect label="Trạng thái dự án" options={filterOpts?.project_statuses || []} selected={projectStatuses} onChange={setProjectStatuses} />
           <MultiSelect label="Quản trị dự án" options={filterOpts?.pms || []} selected={pms} onChange={setPms} />
           <MultiSelect label="Tên dự án" options={filterOpts?.project_names || []} selected={projectNames} onChange={setProjectNames} />
-          {(departments.length > 0 || levels.length > 0 || projectStatuses.length > 0 || pms.length > 0 || projectNames.length > 0 || (weekFrom && weekFrom !== defaults.from) || (weekTo && weekTo !== defaults.to)) && (
+          {(departments.length > 0 || levels.length > 0 || projectStatuses.length > 0 || pms.length > 0 || projectNames.length > 0 || weekFrom || weekTo) && (
             <button
               onClick={() => {
-                setWeekFrom(defaults.from);
-                setWeekTo(defaults.to);
+                setWeekFrom('');
+                setWeekTo('');
                 setDepartments([]);
                 setLevels([]);
                 setProjectStatuses([]);
@@ -183,7 +165,7 @@ export default function DashboardPage() {
                   <span className="flex items-center gap-1"><span className="w-3 h-3 rounded alloc-20 inline-block"></span> &lt;40%</span>
                 </div>
               </div>
-              {resourceData && <ResourceTable data={resourceData} showAllWeeks={!!(weekFrom && weekFrom !== defaults.from) || !!(weekTo && weekTo !== defaults.to)} />}
+              {resourceData && <ResourceTable data={resourceData} showAllWeeks={!!(weekFrom || weekTo)} />}
             </div>
           </div>
         ) : (
