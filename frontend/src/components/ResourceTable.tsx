@@ -130,23 +130,24 @@ export default function ResourceTable({ data, onEmployeeClick, editable = false,
     if (!editingCell || !editingEmpId) return;
     const numVal = parseInt(editValue) || 0;
     const pct = Math.max(0, Math.min(200, numVal)) / 100;
+    const savedEmpId = editingEmpId;
 
     setSaving(true);
     try {
       await bulkCreateAllocation({
-        employee_id: editingEmpId,
+        employee_id: savedEmpId,
         project_id: editingCell.projectId,
         allocations: { [editingCell.week]: pct },
       });
-      const d = await fetchEmployeeDetail(editingEmpId);
-      setDetails(prev => ({ ...prev, [editingEmpId!]: d }));
-      onDataChanged?.();
+      // Update detail data locally without full page reload
+      const d = await fetchEmployeeDetail(savedEmpId);
+      setDetails(prev => ({ ...prev, [savedEmpId]: d }));
     } catch {
       // ignore
     } finally {
       setSaving(false);
       setEditingCell(null);
-      setEditingEmpId(null);
+      // Keep editingEmpId so user can continue editing other cells
     }
   };
 
@@ -278,7 +279,7 @@ export default function ResourceTable({ data, onEmployeeClick, editable = false,
                                     if (isEditing) {
                                       return (
                                         <td key={w} className="allocation-cell !p-0">
-                                          <div className="flex items-center justify-center gap-0.5 px-0.5">
+                                          <div className="flex items-center justify-center gap-1 px-0.5">
                                             <input
                                               type="number"
                                               min={0}
@@ -288,13 +289,13 @@ export default function ResourceTable({ data, onEmployeeClick, editable = false,
                                               onKeyDown={handleEditKeyDown}
                                               autoFocus
                                               disabled={saving}
-                                              className="w-9 text-center text-[11px] py-0.5 border border-blue-400 rounded bg-white dark:bg-slate-700 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                              className="w-10 text-center text-xs py-1 border-2 border-blue-400 rounded bg-white dark:bg-slate-700 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
                                             />
-                                            <button onClick={handleSave} disabled={saving} className="p-0.5 text-emerald-600 hover:text-emerald-700 cursor-pointer">
-                                              <Check size={10} />
+                                            <button onClick={handleSave} disabled={saving} className="p-1 rounded bg-emerald-500 hover:bg-emerald-600 text-white cursor-pointer transition-colors" title="Lưu">
+                                              <Check size={14} strokeWidth={3} />
                                             </button>
-                                            <button onClick={() => { setEditingCell(null); setEditingEmpId(null); }} className="p-0.5 text-slate-400 hover:text-slate-600 cursor-pointer">
-                                              <X size={10} />
+                                            <button onClick={() => { setEditingCell(null); }} className="p-1 rounded bg-slate-300 hover:bg-slate-400 dark:bg-slate-600 dark:hover:bg-slate-500 text-slate-700 dark:text-slate-200 cursor-pointer transition-colors" title="Hủy">
+                                              <X size={14} strokeWidth={3} />
                                             </button>
                                           </div>
                                         </td>
