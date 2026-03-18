@@ -13,7 +13,7 @@ import { useAuth } from '@/lib/auth';
 import { fetchDashboard, fetchResourceTable, fetchFilterOptions, seedAdmin, type DashboardSummary, type ResourceTableData, type FilterOptions } from '@/lib/api';
 import { RotateCcw } from 'lucide-react';
 
-function getDefaultDates() {
+const DEFAULT_DATES = (() => {
   const now = new Date();
   const y = now.getFullYear();
   const m = now.getMonth();
@@ -23,7 +23,7 @@ function getDefaultDates() {
     from: from.toISOString().split('T')[0],
     to: to.toISOString().split('T')[0],
   };
-}
+})();
 
 export default function DashboardPage() {
   const { user, loading: authLoading } = useAuth();
@@ -33,7 +33,7 @@ export default function DashboardPage() {
   const [filterOpts, setFilterOpts] = useState<FilterOptions | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const defaults = getDefaultDates();
+  const defaults = DEFAULT_DATES;
   const [weekFrom, setWeekFrom] = useState(defaults.from);
   const [weekTo, setWeekTo] = useState(defaults.to);
   const [departments, setDepartments] = useState<string[]>([]);
@@ -108,7 +108,7 @@ export default function DashboardPage() {
           <MultiSelect label="Trạng thái dự án" options={filterOpts?.project_statuses || []} selected={projectStatuses} onChange={setProjectStatuses} />
           <MultiSelect label="Quản trị dự án" options={filterOpts?.pms || []} selected={pms} onChange={setPms} />
           <MultiSelect label="Tên dự án" options={filterOpts?.project_names || []} selected={projectNames} onChange={setProjectNames} />
-          {(departments.length > 0 || levels.length > 0 || projectStatuses.length > 0 || pms.length > 0 || projectNames.length > 0 || weekFrom !== defaults.from || weekTo !== defaults.to) && (
+          {(departments.length > 0 || levels.length > 0 || projectStatuses.length > 0 || pms.length > 0 || projectNames.length > 0 || (weekFrom && weekFrom !== defaults.from) || (weekTo && weekTo !== defaults.to)) && (
             <button
               onClick={() => {
                 setWeekFrom(defaults.from);
@@ -170,7 +170,7 @@ export default function DashboardPage() {
                   <span className="flex items-center gap-1"><span className="w-3 h-3 rounded alloc-20 inline-block"></span> &lt;40%</span>
                 </div>
               </div>
-              {resourceData && <ResourceTable data={resourceData} />}
+              {resourceData && <ResourceTable data={resourceData} showAllWeeks={!!(weekFrom && weekFrom !== defaults.from) || !!(weekTo && weekTo !== defaults.to)} />}
             </div>
           </div>
         ) : (

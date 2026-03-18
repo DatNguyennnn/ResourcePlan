@@ -33,13 +33,18 @@ export default function Chatbot() {
     }
 
     try {
-      const [dashboard, employees, projects, resourceTable, chatbotDetails] = await Promise.all([
+      const [dashboard, employees, projects, resourceTable] = await Promise.all([
         fetchDashboard(),
         fetchEmployees(),
         fetchProjects(),
         fetchResourceTable(),
-        fetchChatbotContext(),
       ]);
+
+      // Fetch chatbot details separately (may fail if endpoint not deployed yet)
+      let chatbotDetails: any[] = [];
+      try {
+        chatbotDetails = await fetchChatbotContext();
+      } catch { /* endpoint may not be available yet */ }
 
       // Fetch overloaded employees (lightweight)
       const today = new Date();
@@ -90,7 +95,7 @@ export default function Chatbot() {
 
       // Detailed per-employee project allocation from chatbot-context endpoint
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const detailLines = (chatbotDetails as any[]).map((emp: any) => {
+      const detailLines = chatbotDetails.map((emp: any) => {
         const projLines = emp.projects.map((p: any) => {
           const currentWeeks = Object.entries(p.current_weeks || {}).map(([w, pct]) => `${w}: ${pct}%`).join(', ');
           return `  - ${p.name} [${p.code}]: TB ${p.avg_pct}%, ${p.weeks_count} tuần (${p.from} → ${p.to})${currentWeeks ? ` | Sắp tới: ${currentWeeks}` : ''}`;

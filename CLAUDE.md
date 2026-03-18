@@ -237,7 +237,9 @@ Xây dựng dựa trên dữ liệu từ file Excel `IBS_Resource Plan_2026.xlsx
   - Fix lỗi chatbot trả lời "Không có thông tin" khi hỏi chi tiết phân bổ nhân viên
 - **Sidebar collapse hover**: nút collapse/expand chuyển thành nút tròn nổi bên cạnh sidebar, chỉ hiện khi hover vào sidebar (group-hover)
 - **Theme toggle di chuyển**: "Giao diện sáng/tối" chuyển xuống dưới "Nhập dữ liệu" (cuối navigation, trước bottom section)
-- **Date range hiển thị đầy đủ**: khi chọn ngày ở trang Phân bổ Nhân Lực, hiển thị TẤT CẢ tuần trong khoảng (không giới hạn 1 tháng/trang). Prop `showAllWeeks` bypass month pagination
+- **Date range hiển thị đầy đủ**: khi chọn ngày ở trang Phân bổ Nhân Lực VÀ Dashboard, hiển thị TẤT CẢ tuần trong khoảng (không giới hạn 1 tháng/trang). Prop `showAllWeeks` bypass month pagination
+- **Fix "Xóa lọc" hiện sai**: nút chỉ hiện khi filter thực sự thay đổi (bỏ qua trường hợp date bị xóa rỗng)
+- **Chatbot resilient**: `fetchChatbotContext()` được gọi riêng, nếu lỗi vẫn hoạt động bình thường với dữ liệu cơ bản
 
 ## Cấu trúc file quan trọng
 - `backend/app/main.py` - Entry point FastAPI
